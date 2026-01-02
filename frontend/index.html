@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>System Wynajmu s27383</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="api.js"></script>
+    <script src="user_script.js"></script>
+    <script src="car.script.js"></script>
+    <script src="rental_script.js"></script>
+</head>
+<body>
+    <div class="sidebar">
+        <button onclick="router('users')">Użytkownicy</button>
+        <button onclick="router('cars')">Samochody</button>
+        <button onclick="router('rentals')">Wynajmy</button>
+    </div>
+
+    <div class="main">
+        <h1 id="page-title">Wybierz moduł</h1>
+        <div id="function-menu" style="display:none; margin-bottom:20px;">
+            <button id="btn-list">Lista</button>
+            <button id="btn-details">Szczegóły</button>
+            <button id="btn-add">Dodaj</button>
+        </div>
+        <div id="display-area"></div>
+    </div>
+    
+    <script>
+        function router(modul) {
+            document.getElementById('function-menu').style.display = 'block';
+            document.getElementById('page-title').innerText = "Zarządzanie: " + modul.toUpperCase();
+            document.getElementById('display-area').innerHTML = "Wybierz akcję.";
+
+            if(modul === 'users') {
+                document.getElementById('btn-list').onclick = UserModule.usersList;
+                document.getElementById('btn-details').onclick = UserModule.detailUserList;
+                document.getElementById('btn-add').onclick = UserModule.form;
+            } else if(modul === 'cars') {
+                document.getElementById('btn-list').onclick = CarModule.carList;
+                document.getElementById('btn-details').onclick = CarModule.detaiCarList;
+                document.getElementById('btn-add').onclick = CarModule.form;
+            } else if(modul === 'rentals') {
+                document.getElementById('btn-list').onclick = RentalModule.rentalsList;
+                document.getElementById('btn-details').onclick = RentalModule.details;
+                document.getElementById('btn-add').onclick = RentalModule.form;
+            }
+        }
+    </script>
+</body>
+</html>

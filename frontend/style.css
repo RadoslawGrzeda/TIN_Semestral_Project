@@ -1,0 +1,18 @@
+body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; background: #f0f2f5; }
+.sidebar { width: 200px; background: #2c3e50; color: white; padding: 20px; }
+.sidebar button { width: 100%; padding: 10px; margin-bottom: 10px; cursor: pointer; background: #34495e; border: none; color: white; border-radius: 4px; }
+.sidebar button:hover { background: #1abc9c; }
+
+
+.main { flex-grow: 1; padding: 30px; overflow-y: auto; }
+        
+.function-menu { display: none; margin-bottom: 20px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.function-menu button { margin-right: 10px; padding: 8px 15px; cursor: pointer; background: #ecf0f1; border: 1px solid #bdc3c7; border-radius: 4px; }
+.function-menu button:hover { background: #d5dbdb; }
+
+#display-area { background: white; padding: 20px; border-radius: 8px; min-height: 300px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+th { background: #f8f9fa; }
+input { padding: 8px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
