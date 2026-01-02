@@ -3,12 +3,10 @@ from datetime import date
 from typing import Optional
 
 class UserBase(BaseModel):
-    # id: int = Field(...,min_length=1, description="The unique identifier of the project")
     username: str = Field(..., description="The username of the user")
     email: EmailStr = Field(..., description="The email of the user")
     date_of_birth: date = Field(..., description="The date of birth of the user in YYYY-MM-DD format")
     role: str = Field(default='user')
-
 
 class UserCreate(UserBase):
     password: str = Field(...,min_length=8, description="The password for the user")
