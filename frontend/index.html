@@ -35,15 +35,15 @@
             if(modul === 'users') {
                 document.getElementById('btn-list').onclick = UserModule.usersList;
                 document.getElementById('btn-details').onclick = UserModule.detailUserList;
-                document.getElementById('btn-add').onclick = UserModule.form;
+                document.getElementById('btn-add').onclick = UserModule.addUserForm;
             } else if(modul === 'cars') {
                 document.getElementById('btn-list').onclick = CarModule.carList;
                 document.getElementById('btn-details').onclick = CarModule.detaiCarList;
-                document.getElementById('btn-add').onclick = CarModule.form;
+                document.getElementById('btn-add').onclick = CarModule.addCarForm;
             } else if(modul === 'rentals') {
                 document.getElementById('btn-list').onclick = RentalModule.rentalsList;
-                document.getElementById('btn-details').onclick = RentalModule.details;
-                document.getElementById('btn-add').onclick = RentalModule.form;
+                document.getElementById('btn-details').onclick = RentalModule.detailRentalList;
+                document.getElementById('btn-add').onclick = RentalModule.addRentalForm;
             }
         }
     </script>

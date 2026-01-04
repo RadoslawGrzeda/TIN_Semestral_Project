@@ -12,3 +12,16 @@ router = APIRouter(
 def get_rentals(db:Session = Depends(get_db)):
     rentals = db.query(models.Rental).all()
     return rentals
+
+@router.post('/addRental',response_model=schemas.RentalBase)
+def addRental(rental:schemas.RentalBase,db:Session = Depends(get_db)):
+    db_rental=models.Rental (
+        user_id=rental.user_id,
+        car_id=rental.car_id,
+        rental_start=rental.start,
+        rental_end=rental.end
+    )
+    db.add(db_rental)
+    db.commit()
+    db.refresh(db_rental)
+    return db_rental
