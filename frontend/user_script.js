@@ -1,8 +1,8 @@
 const UserModule = {
     async usersList() {
     const data = await ApiService.get('/users');
-    let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th></tr>`;
-        data.forEach(u => html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td></tr>`);
+    let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th><th>Akcje</th></tr>`;
+        data.forEach(u => html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td><button onclick="UserModule.deleteUser(${u.id})">Usuń</button><button onclick="UserModule.modifyUserForm(${u.id})">Modyfikuj</button></td></tr>`);
         document.getElementById('display-area').innerHTML = html + "</table>";
     },
     async detailUserList(){
@@ -59,6 +59,54 @@ const UserModule = {
 
         };
         
+    },
+    async deleteUser(userId){
+        try{
+            await ApiService.delete(`/users/deleteUser/${userId}`);
+            alert('uzytkownik usuniety');
+            this.usersList()
+        }catch (error){
+            alert('Błąd podczas usuwania osoby: '+error.message);
+        }
+    },
+    async modifyUserForm(userId){
+        try{
+            const users=await ApiService.get('/users');
+            const user=users.find(u=>u.id===userId);
+
+            let html=`
+            <h3>Modyfikuj uzytkownika</h3>
+            <form id='modify-user-form'>
+            <label>Username: <input type='text' id='username' placeholder = ${user.username} required></label><br>
+            <label>Email: <input type='text' id='email' placeholder = ${user.email} required></label><br>
+            <label>date_of_birth: <input type='date' id='date_of_birth' placeholder = ${user.date_of_birth} required></label><br>
+            <label>Password: <input type='text' id='password' required></label><br>
+            <button type='submit'> zmodyfikuj uzytkownika </button>
+            </form>
+            `;
+            document.getElementById('display-area').innerHTML = html;
+            document.getElementById('modify-user-form').onsubmit = async (e) => {
+                e.preventDefault();
+                const userData = {
+                    username: document.getElementById('username').value,
+                    email: document.getElementById('email').value,
+                    date_of_birth: document.getElementById('date_of_birth').value,
+                    password: document.getElementById('password').value
+                };
+                
+                UserModule.modifyUser(userId,userData);
+            }
+        }catch (error){
+            alert('Błąd podczas modyfikowania osoby: '+error.message);
+        }  },
+    async modifyUser(userId,userData){
+        try{
+            await ApiService.patch(`/users/updateUser/${userId}`,userData);
+            alert('uzytkownik zmodyfikowany');
+            this.usersList()
+        }catch (error){
+            alert('Błąd podczas modyfikowania osoby: '+error.message);
+        }
     },
     async addUser(userData){
         try{

@@ -19,9 +19,15 @@ class UserResponse(UserBase):
 
     
 
+    
+
+class UserUpdate(BaseModel):
+    username: Optional[str] = Field(None, description="The username of the user")
+    email: Optional[EmailStr] = Field(None, description="The email of the user")
+    date_of_birth: Optional[date] = Field(None, description="The date of birth of the user in YYYY-MM-DD format")
+    role: Optional[str] = Field(None, description="The role of the user")
     class Config:
         from_attributes = True
-    
 
 class CarBase(BaseModel):
     brand: str = Field(..., description="The brand of the car")

@@ -17,6 +17,30 @@ const ApiService={
             throw new Error(errorData.message||'Błąd podczas wysyłania danych do API');
         }
         return await response.json();
+    },
+    
+    async patch(endpoint, data){
+        const response = await fetch(`${API_URL}${endpoint}`, {
+            method: 'PATCH',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        if(!response.ok){
+            const errorData = await response.json();
+            throw new Error(errorData.detail || errorData.message || 'Błąd podczas wysyłania danych do API');
+        }
+        return await response.json();
+    },
+    async delete(endpoint){
+        const response=await fetch(`${API_URL}${endpoint}`,{
+            method:'DELETE'
+        });
+        if(!response.ok){
+            const errorData=await response.json();
+            throw new Error(errorData.message||'Błąd podczas usuwania danych z API');
+        }
+        return await response.json();
     }
+
 
 }
