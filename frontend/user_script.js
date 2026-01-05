@@ -1,15 +1,38 @@
 const UserModule = {
     async usersList() {
     const data = await ApiService.get('/users');
-    let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>ID</th><th>Login</th></tr>`;
-        data.forEach(u => html += `<tr><td>${u.id}</td><td>${u.username}</td></tr>`);
+    let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th></tr>`;
+        data.forEach(u => html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td></tr>`);
         document.getElementById('display-area').innerHTML = html + "</table>";
     },
     async detailUserList(){
-        const data=await ApiService.get('/users');
-        let html=`<h3>Lista Szczegółowa (Users)</h3><table><tr><th>ID</th><th>Login</th><th>Email</th><th>Imię</th><th>Nazwisko</th></tr>`;
-        data.forEach(u=>html+=`<tr><td>${u.id}</td><td>${u.username}</td><td>${u.email}</td><td>${u.first_name}</td><td>${u.last_name}</td></tr>`);
-        document.getElementById('display-area').innerHTML=html+"</table>";
+        const data = await ApiService.get('/users/showAllRelations');
+        let html = `<h3>Lista Szczegółowa (Users)</h3>`;
+        if(!data || data.length === 0){
+            document.getElementById('display-area').innerHTML = '<p>Brak użytkowników</p>';
+            return;
+        }
+
+        data.forEach(u => {
+            html += `<div class="user-card">`;
+            html += `<h4>${u.username} (ID: ${u.id})</h4>`;
+            html += `<p><strong>Email:</strong> ${u.email} &nbsp; <strong>Data urodzenia:</strong> ${u.date_of_birth} &nbsp; <strong>Rola:</strong> ${u.role}</p>`;
+
+            if(u.rentals && u.rentals.length > 0){
+                html += `<details><summary>Wypożyczenia (${u.rentals.length})</summary><ul>`;
+                u.rentals.forEach(r => {
+                    const car = r.car || {};
+                    html += `<li>Rezerwacja ID ${r.id}: ${r.rental_start} → ${r.rental_end ?? 'aktualne'} — Samochód: ${car.brand ?? '—'} ${car.model ?? ''} (ID: ${car.id ?? '—'})</li>`;
+                });
+                html += `</ul></details>`;
+            } else {
+                html += `<p><em>Brak wypożyczeń</em></p>`;
+            }
+
+            html += `</div>`;
+        });
+
+        document.getElementById('display-area').innerHTML = html;
     },
     addUserForm(){
         const html =`
@@ -30,7 +53,7 @@ const UserModule = {
                 username:document.getElementById('username').value,
                 email:document.getElementById('email').value,
                 date_of_birth:document.getElementById('date_of_birth').value,
-                Password:document.getElementById('password').value
+                password:document.getElementById('password').value
             };
             UserModule.addUser(userDate);
 

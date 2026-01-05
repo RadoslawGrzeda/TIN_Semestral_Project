@@ -17,12 +17,25 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
+    
+
+    class Config:
+        from_attributes = True
+    
+
 class CarBase(BaseModel):
     brand: str = Field(..., description="The brand of the car")
     model: str = Field(..., description="The model of the car")
     production_year: date = Field(..., description="The production year of the car in YYYY-MM-DD format")
     daily_rental_price: float = Field(..., description="The daily rental price of the car")
     description: str  = Field(None, description="A brief description of the car")
+
+
+class CarResponse(CarBase):
+    id: int
+
+    class Config:
+        from_attributes = True
 
 class RentalBase(BaseModel):
     user_id: int = Field(..., description="The ID of the user renting the car")
@@ -36,3 +49,36 @@ class RentalBase(BaseModel):
             if self.rental_end < self.rental_start:
                 raise ValueError("rental_end must be after rental_start")
         return self
+
+
+class RentalOut(BaseModel):
+    id: int
+    rental_start: date
+    rental_end: Optional[date] = None
+    car: CarResponse
+
+    class Config:
+        from_attributes = True
+
+class RentalOutUser(BaseModel):
+    id: int
+    rental_start: date
+    rental_end: Optional[date] = None
+    user: UserResponse
+
+    class Config:
+        from_attributes = True
+
+class CarsWithRentals(CarResponse):
+    rentals: list[RentalOutUser] = []
+
+    class Config:
+        from_attributes = True
+
+
+
+class UserWithRentals(UserResponse):
+    rentals: list[RentalOut] = []
+
+    class Config:
+        from_attributes = True
