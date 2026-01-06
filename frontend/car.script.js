@@ -137,7 +137,7 @@ const CarModule = {
 }}catch (error){
             alert('Błąd podczas modyfikowania osoby: '+error.message);
         } },
-        
+
 async deleteCar(carId){
     try {
         await ApiService.delete(`/cars/deleteCar/${carId}`);
@@ -152,9 +152,9 @@ async deleteCar(carId){
 async modifyCar(carId,carData){
     try{
         await ApiService.patch(`/cars/updateCar/${carId}`,carData)
-        alert('Samochod dodany')
+        alert('Samochod został zmodyfikowany')
         this.carList()
     }catch (error){
-    alert('blad podczas modyfikowania samochodu')
+    alert('Błąd podczas modyfikowania samochodu: '+error.message);
 }}
 }

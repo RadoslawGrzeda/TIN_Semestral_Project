@@ -44,6 +44,7 @@ class CarResponse(CarBase):
         from_attributes = True
 
 class RentalBase(BaseModel):
+    # id : int = Field(..., description="The unique identifier of the rental")
     user_id: int = Field(..., description="The ID of the user renting the car")
     car_id: int = Field(..., description="The ID of the car being rented")
     rental_start: date = Field(..., description="The start date of the rental in YYYY-MM-DD format")
