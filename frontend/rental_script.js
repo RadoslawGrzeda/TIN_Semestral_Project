@@ -14,9 +14,19 @@ const RentalModule = {
         document.getElementById('display-area').innerHTML = html + "</table>";
     },
     async detailRentalList(){
-        const data=await ApiService.get('/rentals');
-        let html=`<h3>Lista Szczegółowa Wypożyczeń</h3><table><tr><th>ID</th><th>ID Samochodu</th><th>ID Użytkownika</th><th>Data Wypożyczenia</th><th>Data Zwrotu</th><th>Status</th></tr>`;
-        data.forEach(r=>html+=`<tr><td>${r.id}</td><td>${r.car_id}</td><td>${r.user_id}</td><td>${r.rental_start}</td><td>${r.rental_end}</td><td>${r.status}</td></tr>`);
+        const data=await ApiService.get('/rentals/detailedList');
+        let html=`
+        <h3>Lista Szczegółowa Wypożyczeń</h3>
+        <table>
+        <tr>
+        <th>Marka Samochodu</th>
+        <th>Model Samochodu</th>
+        <th>Login Użytkownika</th>
+        <th>Email Użytkownika</th>
+        <th>Data Wypożyczenia</th>
+        <th>Data Zwrotu</th>
+        </tr>`;
+        data.forEach(r=>html+=`<tr><td>${r.car.brand}</td><td>${r.car.model}</td><td>${r.user.username}</td><td>${r.user.email}</td><td>${r.rental_start}</td><td>${r.rental_end}</td></tr>`);
         document.getElementById('display-area').innerHTML=html+"</table>";
     },
     addRentalForm(){

@@ -16,6 +16,7 @@ def get_rentals(db:Session = Depends(get_db)):
 @router.get('/detailedList',response_model=list[schemas.RentalDetail])
 def get_detailed_rentals(db:Session = Depends(get_db)):
     rentals = db.query(models.Rental).all()
+
     return rentals
 
 @router.post('/addRental',response_model=schemas.RentalBase)
