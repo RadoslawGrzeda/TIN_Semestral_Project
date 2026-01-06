@@ -43,8 +43,9 @@ class CarResponse(CarBase):
     class Config:
         from_attributes = True
 
+
+
 class RentalBase(BaseModel):
-    # id : int = Field(..., description="The unique identifier of the rental")
     user_id: int = Field(..., description="The ID of the user renting the car")
     car_id: int = Field(..., description="The ID of the car being rented")
     rental_start: date = Field(..., description="The start date of the rental in YYYY-MM-DD format")
@@ -57,6 +58,12 @@ class RentalBase(BaseModel):
                 raise ValueError("rental_end must be after rental_start")
         return self
 
+class RentalUpdate(RentalBase):
+    id: int= Field(..., description="The unique identifier of the rental")
+
+class RentalDetail(RentalBase):
+    car: CarResponse
+    user: UserResponse
 
 class RentalOut(BaseModel):
     id: int

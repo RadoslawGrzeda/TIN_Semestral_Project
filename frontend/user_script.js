@@ -77,9 +77,9 @@ const UserModule = {
             let html=`
             <h3>Modyfikuj uzytkownika</h3>
             <form id='modify-user-form'>
-            <label>Username: <input type='text' id='username' placeholder = ${user.username} required></label><br>
-            <label>Email: <input type='text' id='email' placeholder = ${user.email} required></label><br>
-            <label>date_of_birth: <input type='date' id='date_of_birth' placeholder = ${user.date_of_birth} required></label><br>
+            <label>Username: <input type='text' id='username' value = ${user.username} required></label><br>
+            <label>Email: <input type='text' id='email' value = ${user.email} required></label><br>
+            <label>date_of_birth: <input type='date' id='date_of_birth' value = ${user.date_of_birth} required></label><br>
             <label>Password: <input type='text' id='password' required></label><br>
             <button type='submit'> zmodyfikuj uzytkownika </button>
             </form>

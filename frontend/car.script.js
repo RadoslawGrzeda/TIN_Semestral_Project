@@ -114,12 +114,12 @@ const CarModule = {
                 <h3>Edytuj samochód</h3>
                 <form id="modify-car-form">
                 <label>Marka: 
-                <input type="text" id="brand" placeholder=${car.brand} required></label><br>
+                <input type="text" id="brand" value=${car.brand} required></label><br>
                 <label>Model:
-                <input type="text" id="model" placeholder=${car.model} required></label><br>
-                <label>Rok produkcji: <input type="date" id="production_year" placeholder=${car.production_year}required></label><br>
-                <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price"  placeholder=${car.daily_rental_price} required></label><br>
-                <label>Opis: <input type="text"  placeholder=${car.description} id="description"></label><br>
+                <input type="text" id="model" value=${car.model} required></label><br>
+                <label>Rok produkcji: <input type="date" id="production_year" value=${car.production_year}required></label><br>
+                <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price"  value=${car.daily_rental_price} required></label><br>
+                <label>Opis: <input type="text"  value=${car.description} id="description"></label><br>
                 <button type="submit">Zaktualizuj samochód</button>
                 </form>
         `;

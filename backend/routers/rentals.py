@@ -8,12 +8,15 @@ router = APIRouter(
     tags=['rental']
 )
 
-@router.get('/',response_model=list[schemas.RentalBase])
+@router.get('/',response_model=list[schemas.RentalUpdate])
 def get_rentals(db:Session = Depends(get_db)):
     rentals = db.query(models.Rental).all()
     return rentals
 
-
+@router.get('/detailedList',response_model=list[schemas.RentalDetail])
+def get_detailed_rentals(db:Session = Depends(get_db)):
+    rentals = db.query(models.Rental).all()
+    return rentals
 
 @router.post('/addRental',response_model=schemas.RentalBase)
 def addRental(rental:schemas.RentalBase,db:Session = Depends(get_db)):
@@ -31,7 +34,26 @@ def addRental(rental:schemas.RentalBase,db:Session = Depends(get_db)):
 
 @router.delete('/deleteRental/{rental_id}')
 def deleteRental(rental_id:int ,db:Session=Depends(get_db)):
-    rental=db.query(models.Rental).filter(models.Rental.id==rental_id).all()
+    rental=db.query(models.Rental).filter(models.Rental.id==rental_id).first()
+    if not rental:
+        raise HTTPException(status_code=404, detail="Rental not found")
     db.delete(rental)
     db.commit()
     return {'detail': "rental deleted"}
+
+@router.patch('/updateRental/{rental_id}', response_model=schemas.RentalBase)
+def update_rental(rental_id:int, rental:schemas.RentalBase,db:Session=Depends(get_db)):
+    db_rental=db.query(models.Rental).filter(models.Rental.id==rental_id).first()
+    if not db_rental:
+        raise HTTPException(status_code=404, detail="Rental not found")
+    
+    db_rental.id=db_rental.id
+    db_rental.user_id=rental.user_id
+    db_rental.car_id=rental.car_id
+    db_rental.rental_start=rental.rental_start
+    db_rental.rental_end=rental.rental_end
+    
+    db.commit()
+    db.refresh(db_rental)
+    
+    return db_rental
