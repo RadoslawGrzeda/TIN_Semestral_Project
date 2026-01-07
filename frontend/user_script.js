@@ -58,14 +58,46 @@ const UserModule = {
         document.getElementById('add-user-form').onsubmit= (e) => 
         {
             e.preventDefault();
+            // Frontend Validation
+            document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
+            let isValid = true;
+            
+            const username = document.getElementById('username').value;
+            if(!/^[a-zA-Z0-9_]{6,30}$/.test(username)) {
+                document.getElementById('error-username').innerText = "Username must be between 6 and 30 characters long, letters, digits, and _ only";
+                isValid = false;
+            }
+            
+            const dobVal = document.getElementById('date_of_birth').value;
+            if(dobVal) {
+                const dob = new Date(dobVal);
+                const today = new Date();
+                let age = today.getFullYear() - dob.getFullYear();
+                const m = today.getMonth() - dob.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                    age--;
+                }
+                if(age < 18) {
+                    document.getElementById('error-date_of_birth').innerText = "User must be at least 18 years old";
+                    isValid = false;
+                }
+            }
+
+            const pwd = document.getElementById('password').value;
+            if(pwd.length < 8) {
+                document.getElementById('error-password').innerText = "Password must be at least 8 characters long";
+                isValid = false;
+            }
+
+            if(!isValid) return;
+
             const userDate={
-                username:document.getElementById('username').value,
+                username:username,
                 email:document.getElementById('email').value,
-                date_of_birth:document.getElementById('date_of_birth').value,
-                password:document.getElementById('password').value
+                date_of_birth:dobVal,
+                password:pwd
             };
             UserModule.addUser(userDate);
-
         };
         
     },
@@ -105,11 +137,43 @@ const UserModule = {
             document.getElementById('display-area').innerHTML = html;
             document.getElementById('modify-user-form').onsubmit = async (e) => {
                 e.preventDefault();
-                const userData = {};
-                userData.username = document.getElementById('mod-username').value;
-                userData.email = document.getElementById('mod-email').value;
-                userData.date_of_birth = document.getElementById('mod-date_of_birth').value;
+                // Frontend Validation
+                document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
+                let isValid = true;
+                
+                const username = document.getElementById('mod-username').value;
+                if(!/^[a-zA-Z0-9_]{6,30}$/.test(username)) {
+                    document.getElementById('error-username').innerText = "Username must be between 6 and 30 characters long, letters, digits, and _ only";
+                    isValid = false;
+                }
+                
+                const dobVal = document.getElementById('mod-date_of_birth').value;
+                if(dobVal) {
+                    const dob = new Date(dobVal);
+                    const today = new Date();
+                    let age = today.getFullYear() - dob.getFullYear();
+                    const m = today.getMonth() - dob.getMonth();
+                    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+                        age--;
+                    }
+                    if(age < 18) {
+                        document.getElementById('error-date_of_birth').innerText = "User must be at least 18 years old  ";
+                        isValid = false;
+                    }
+                }
+
                 const pwd = document.getElementById('mod-password').value;
+                if(pwd && pwd.length < 8) {
+                    document.getElementById('error-password').innerText = "Password must be at least 8 characters long";
+                    isValid = false;
+                }
+
+                if(!isValid) return;
+
+                const userData = {};
+                userData.username = username;
+                userData.email = document.getElementById('mod-email').value;
+                userData.date_of_birth = dobVal;
                 if(pwd) userData.password = pwd;
                 
                 
@@ -119,7 +183,7 @@ const UserModule = {
             alert('Błąd podczas modyfikowania osoby: '+error.message);
         }  },
     async modifyUser(userId,userData){
-        // Clear errors
+        
         document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
         
         try{
@@ -158,6 +222,8 @@ const UserModule = {
                 alert('Błąd podczas dodawania osoby: '+error.message);
             }
         }
-    }
+    },
+
+    
     
 }

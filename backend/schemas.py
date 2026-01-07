@@ -2,6 +2,7 @@ from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import date
 from typing import Optional
 import re
+import models
 
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
@@ -93,7 +94,7 @@ class CarBase(BaseModel):
     daily_rental_price: float = Field(..., description="The daily rental price of the car")
     description: str  = Field(None, description="A brief description of the car")
 
-    field_validator('brand')
+    @field_validator('brand')
     def brand_length(cls, v):
         if not (2 <= len(v) <= 20):
             raise ValueError('brand name must be between 2 and 20 characters long')
@@ -136,12 +137,19 @@ class RentalBase(BaseModel):
     rental_start: date = Field(..., description="The start date of the rental in YYYY-MM-DD format")
     rental_end: Optional[date] = Field(None, description="The end date of the rental in YYYY-MM-DD format")
 
-    # @model_validator(mode='after')
-    # def check_dates(self):
-    #     if self.rental_end and self.rental_start:
-    #         if self.rental_end < self.rental_start:
-    #             raise ValueError("rental_end must be after rental_start")
-    #     return self
+    @field_validator('user_id', 'car_id')
+    def check_exists():
+        if v <= 0:
+            raise ValueError('ID must be a positive integer')
+        return v
+
+    @field_validator('rental_end')
+    def check_rental_dates(cls, v, info):
+        rental_start = info.data.get('rental_start')
+        if v and rental_start and v < rental_start:
+            raise ValueError("rental_end must be after rental_start")
+        return v
+
 
 class RentalUpdate(RentalBase):
     id: int= Field(..., description="The unique identifier of the rental")

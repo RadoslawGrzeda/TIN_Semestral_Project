@@ -91,7 +91,7 @@ const CarModule = {
                 <label>Model: <input type="text" id="model" required></label><br>
                 <span id="error-model" style="color:red; font-size:0.9em;"></span><br>
                 
-                <label>Rok produkcji: <input type="text" id="production_year" required></label><br>
+                <label>Rok produkcji: <input type="number" id="production_year" required></label><br>
                 <span id="error-production_year" style="color:red; font-size:0.9em;"></span><br>
                 
                 <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price" required></label><br>
@@ -106,11 +106,48 @@ const CarModule = {
         document.getElementById('display-area').innerHTML = html;
         document.getElementById('add-car-form').onsubmit = (e) => {
             e.preventDefault();
+            // Frontend Validation
+            document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
+            let isValid = true;
+
+            const brand = document.getElementById('brand').value;
+            if(brand.length < 2 || brand.length > 20) {
+                document.getElementById('error-brand').innerText = "Marka musi mieć od 2 do 20 znaków";
+                isValid = false;
+            }
+
+            const model = document.getElementById('model').value;
+            if(model.length < 2 || model.length > 20) {
+                document.getElementById('error-model').innerText = "Model musi mieć od 2 do 20 znaków";
+                isValid = false;
+            }
+
+            const year = parseInt(document.getElementById('production_year').value);
+            const currentYear = new Date().getFullYear();
+            if(year < 2000 || year > currentYear) {
+                document.getElementById('error-production_year').innerText = `Rok produkcji musi być między 2000 a ${currentYear}`;
+                isValid = false;
+            }
+
+            const price = parseFloat(document.getElementById('daily_rental_price').value);
+            if(price <= 100) {
+                document.getElementById('error-daily_rental_price').innerText = "Cena musi być wyższa niż 100";
+                isValid = false;
+            }
+
+            if(!isValid) return;
+
             const carData = {
-                brand: document.getElementById('brand').value,
-                model: document.getElementById('model').value,
-                production_year: document.getElementById('production_year').value,
-                daily_rental_price: parseFloat(document.getElementById('daily_rental_price').value),
+                brand: brand,
+                model: model,
+                production_year: document.getElementById('production_year').value, // send as string/num depending on API? API takes string date in previous schemas but maybe int now?
+                // schemas.py CarBase says: production_year: int
+                // So passing the value from input (string) is okay if JSON stringifies it, but maybe better pass int?
+                // Wait, schemas.py from last reading said production_year: int
+                // ApiService checks JSON.stringify.
+                // Let's keep it safe.
+                production_year: year,
+                daily_rental_price: price,
                 description: document.getElementById('description').value || null
             };
             CarModule.addCar(carData);
@@ -153,7 +190,7 @@ const CarModule = {
                 <label>Model:
                 <input type="text" id="model" value="${car.model}" required></label><br>
                 <span id="error-model" style="color:red; font-size:0.9em;"></span><br>
-                <label>Rok produkcji: <input type="text" id="production_year" value="${car.production_year}" required></label><br>
+                <label>Rok produkcji: <input type="number" id="production_year" value="${car.production_year}" required></label><br>
                 <span id="error-production_year" style="color:red; font-size:0.9em;"></span><br>
                 <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price"  value="${car.daily_rental_price}" required></label><br>
                 <span id="error-daily_rental_price" style="color:red; font-size:0.9em;"></span><br>
@@ -167,11 +204,43 @@ const CarModule = {
         document.getElementById('display-area').innerHTML=html;
         document.getElementById('modify-car-form').onsubmit = async(e) => {
             e.preventDefault();
-        const carData = {
-                brand: document.getElementById('brand').value,
-                model: document.getElementById('model').value,
-                production_year: document.getElementById('production_year').value,
-                daily_rental_price: parseFloat(document.getElementById('daily_rental_price').value),
+            
+            // Frontend validation
+            document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
+            let isValid = true;
+
+            const brand = document.getElementById('brand').value;
+            if(brand.length < 2 || brand.length > 20) {
+                document.getElementById('error-brand').innerText = "Marka musi mieć od 2 do 20 znaków";
+                isValid = false;
+            }
+
+            const model = document.getElementById('model').value;
+            if(model.length < 2 || model.length > 20) {
+                document.getElementById('error-model').innerText = "Model musi mieć od 2 do 20 znaków";
+                isValid = false;
+            }
+
+            const year = parseInt(document.getElementById('production_year').value);
+            const currentYear = new Date().getFullYear();
+            if(year < 2000 || year > currentYear) {
+                document.getElementById('error-production_year').innerText = `Rok produkcji musi być między 2000 a ${currentYear}`;
+                isValid = false;
+            }
+
+            const price = parseFloat(document.getElementById('daily_rental_price').value);
+            if(price <= 100) {
+                document.getElementById('error-daily_rental_price').innerText = "Cena musi być wyższa niż 100";
+                isValid = false;
+            }
+
+            if(!isValid) return;
+
+            const carData = {
+                brand: brand,
+                model: model,
+                production_year: year,
+                daily_rental_price: price,
                 description: document.getElementById('description').value || null
             };
             CarModule.modifyCar(carId,carData)
