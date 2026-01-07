@@ -55,10 +55,16 @@ const UserModule = {
         </form>
         `;
         document.getElementById('display-area').innerHTML = html;
-        document.getElementById('add-user-form').onsubmit= (e) => 
+        document.getElementById('add-user-form').onsubmit= async (e) => 
         {
+            
             e.preventDefault();
-            // Frontend Validation
+
+            const users=await ApiService.get('/users');
+
+            
+
+            
             document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
             let isValid = true;
             
@@ -88,6 +94,15 @@ const UserModule = {
                 document.getElementById('error-password').innerText = "Password must be at least 8 characters long";
                 isValid = false;
             }
+
+            const email= document.getElementById('email').value;
+            if(users.some(u => u.email === email)) {
+                document.getElementById('error-email').innerText = "Email is already in use";
+                isValid = false;
+            }
+
+
+
 
             if(!isValid) return;
 
@@ -183,7 +198,7 @@ const UserModule = {
             alert('Błąd podczas modyfikowania osoby: '+error.message);
         }  },
     async modifyUser(userId,userData){
-        
+
         document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
         
         try{

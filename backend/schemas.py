@@ -137,11 +137,6 @@ class RentalBase(BaseModel):
     rental_start: date = Field(..., description="The start date of the rental in YYYY-MM-DD format")
     rental_end: Optional[date] = Field(None, description="The end date of the rental in YYYY-MM-DD format")
 
-    @field_validator('user_id', 'car_id')
-    def check_exists():
-        if v <= 0:
-            raise ValueError('ID must be a positive integer')
-        return v
 
     @field_validator('rental_end')
     def check_rental_dates(cls, v, info):
