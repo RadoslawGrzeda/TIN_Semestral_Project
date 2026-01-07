@@ -23,7 +23,7 @@ class Car(Base):
     id=Column(Integer,primary_key=True)
     brand=Column(String(25),nullable=False)
     model=Column(String(25),nullable=False)
-    production_year=Column(Date,nullable=False)
+    production_year=Column(Integer,nullable=False)
     daily_rental_price=Column(Float,nullable=False)
     description=Column(String(150),nullable=True)
     

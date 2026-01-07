@@ -89,15 +89,28 @@ class UserResponse(UserBase):
 class CarBase(BaseModel):
     brand: str = Field(..., description="The brand of the car")
     model: str = Field(..., description="The model of the car")
-    production_year: date = Field(..., description="The production year of the car in YYYY-MM-DD format")
+    production_year: int = Field(..., description="The production year of the car in YYYY-MM-DD format")
     daily_rental_price: float = Field(..., description="The daily rental price of the car")
     description: str  = Field(None, description="A brief description of the car")
 
+    field_validator('brand')
+    def brand_length(cls, v):
+        if not (2 <= len(v) <= 20):
+            raise ValueError('brand name must be between 2 and 20 characters long')
+        return v
+    
+    @field_validator('model')
+    def model_length(cls, v):
+        if not (2 <= len(v) <= 20):
+            raise ValueError('Model name must be between 2 and 20 characters long')
+        return v
+    
     @field_validator('production_year')
     def valid_production_year(cls, v):
-        current_year = date.today().year
-        if v.year < 2000 or v.year > current_year:
-            raise ValueError(f'Production year must be between 2000 and {current_year}')
+        # current_year = date.today().year
+        today = date.today()
+        if v < 2000 or v > today.year:
+            raise ValueError(f'Production year must be between 2000 and {today.year}')
         return v
 
     @field_validator('daily_rental_price')
@@ -106,18 +119,7 @@ class CarBase(BaseModel):
             raise ValueError('Daily rental price must be higher than 100')
         return v
     
-    @field_validator('model')
-    def model_length(cls, v):
-        if not (2 <= len(v) <= 20):
-            raise ValueError('Model name must be between 2 and 20 characters long')
-        return v
 
-    field_validator('brand')
-    def brand_length(cls, v):
-        if not (2 <= len(v) <= 20):
-            raise ValueError('brand name must be between 2 and 20 characters long')
-        return v
-    
 
 
 class CarResponse(CarBase):
