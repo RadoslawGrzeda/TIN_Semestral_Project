@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field, EmailStr, model_validator
+from pydantic import BaseModel, Field, EmailStr, field_validator
 from datetime import date
 from typing import Optional
+import re
 
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
@@ -8,9 +9,38 @@ class UserBase(BaseModel):
     date_of_birth: date = Field(..., description="The date of birth of the user in YYYY-MM-DD format")
     role: str = Field(default='user')
 
+
+    @field_validator('username')
+    def username_alphanumeric(cls, v):
+        if not re.match(r'^[a-zA-Z0-9_]+$', v):
+            raise ValueError('Username must be alphanumeric')
+        if not (6 <= len(v) <= 30):
+            raise ValueError('Username must be between 6 and 30 characters long')
+        return v
+
+    @field_validator('date_of_birth')
+    def check_age(cls, v):
+        today = date.today()
+        age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
+        if age < 18:
+            raise ValueError('User must be at least 18 years old')
+        return v
+        
+    
 class UserCreate(UserBase):
     password: str = Field(...,min_length=8, description="The password for the user")
 
+    @field_validator('password')
+    def password_strength(cls, v):
+        if (len(v) < 8 or
+            not re.search(r'[A-Z]', v) or
+            not re.search(r'[a-z]', v) or
+            not re.search(r'[0-9]', v) or
+            not re.search(r'[\W_]', v)):
+            raise ValueError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character')
+        return v
+
+        
 class UserResponse(UserBase):
     id: int = Field(..., description="The unique identifier of the user")
 
@@ -21,13 +51,40 @@ class UserResponse(UserBase):
 
     
 
-class UserUpdate(BaseModel):
-    username: Optional[str] = Field(None, description="The username of the user")
-    email: Optional[EmailStr] = Field(None, description="The email of the user")
-    date_of_birth: Optional[date] = Field(None, description="The date of birth of the user in YYYY-MM-DD format")
-    role: Optional[str] = Field(None, description="The role of the user")
-    class Config:
-        from_attributes = True
+# class UserUpdate(BaseModel):
+#     username: Optional[str] = Field(None, description="The username of the user")
+#     email: Optional[EmailStr] = Field(None, description="The email of the user")
+#     date_of_birth: Optional[date] = Field(None, description="The date of birth of the user in YYYY-MM-DD format")
+#     role: Optional[str] = Field(None, description="The role of the user")
+#     password: Optional[str] = Field(None, min_length=8, description="The password of the user")
+
+#     @field_validator('username')
+#     def username_alphanumeric(cls, v):
+#         if v is not None and not re.match(r'^[a-zA-Z0-9_]+$', v):
+#             raise ValueError('Username must be alphanumeric')
+#         return v
+
+#     @field_validator('date_of_birth')
+#     def check_age(cls, v):
+#         if v is not None:
+#             today = date.today()
+#             age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
+#             if age < 18:
+#                 raise ValueError('User must be at least 18 years old')
+#         return v
+
+    # class Config:
+    #     from_attributes = True
+
+    # @field_validator('password')
+    # def password_strength(cls, v):
+    #     if (len(v) < 8 or
+    #         not re.search(r'[A-Z]', v) or
+    #         not re.search(r'[a-z]', v) or
+    #         not re.search(r'[0-9]', v) or
+    #         not re.search(r'[\W_]', v)):
+    #         raise ValueError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character')
+        # return v
 
 class CarBase(BaseModel):
     brand: str = Field(..., description="The brand of the car")
@@ -35,6 +92,32 @@ class CarBase(BaseModel):
     production_year: date = Field(..., description="The production year of the car in YYYY-MM-DD format")
     daily_rental_price: float = Field(..., description="The daily rental price of the car")
     description: str  = Field(None, description="A brief description of the car")
+
+    @field_validator('production_year')
+    def valid_production_year(cls, v):
+        current_year = date.today().year
+        if v.year < 2000 or v.year > current_year:
+            raise ValueError(f'Production year must be between 2000 and {current_year}')
+        return v
+
+    @field_validator('daily_rental_price')
+    def valid_price(cls, v):
+        if v <= 100:
+            raise ValueError('Daily rental price must be higher than 100')
+        return v
+    
+    @field_validator('model')
+    def model_length(cls, v):
+        if not (2 <= len(v) <= 20):
+            raise ValueError('Model name must be between 2 and 20 characters long')
+        return v
+
+    field_validator('brand')
+    def brand_length(cls, v):
+        if not (2 <= len(v) <= 20):
+            raise ValueError('brand name must be between 2 and 20 characters long')
+        return v
+    
 
 
 class CarResponse(CarBase):
@@ -51,12 +134,12 @@ class RentalBase(BaseModel):
     rental_start: date = Field(..., description="The start date of the rental in YYYY-MM-DD format")
     rental_end: Optional[date] = Field(None, description="The end date of the rental in YYYY-MM-DD format")
 
-    @model_validator(mode='after')
-    def check_dates(self):
-        if self.rental_end and self.rental_start:
-            if self.rental_end < self.rental_start:
-                raise ValueError("rental_end must be after rental_start")
-        return self
+    # @model_validator(mode='after')
+    # def check_dates(self):
+    #     if self.rental_end and self.rental_start:
+    #         if self.rental_end < self.rental_start:
+    #             raise ValueError("rental_end must be after rental_start")
+    #     return self
 
 class RentalUpdate(RentalBase):
     id: int= Field(..., description="The unique identifier of the rental")

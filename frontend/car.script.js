@@ -26,15 +26,26 @@
 const CarModule = {
     async carList(){
         const data = await ApiService.get('/cars');
-        let html = `<h3>Lista Samochodów</h3><table><tr><th>Marka</th><th>Model</th><th>Rok produkcji</th><th>Cena/dzień</th><th>Akcje</th></tr>`;
+        let html = `
+        <h3>Lista Samochodów</h3>
+        <table>
+        <tr>
+        <th>Marka</th>
+        <th>Model</th>
+        <th>Rok produkcji</th>
+        <th>Cena/dzień</th>
+        <th>Akcje</th>
+        </tr>`;
         data.forEach(c => 
-            html += `<tr><td>${c.brand}</td><td>${c.model}</td><td>${c.production_year}</td><td>${c.daily_rental_price}</td>
+            html += `
+            <tr>
+            <td>${c.brand}</td>
+            <td>${c.model}</td>
+            <td>${c.production_year}</td>
+            <td>${c.daily_rental_price}</td>
             <td>
-            <button onclick="CarModule.deleteCar(${c.id})">
-            Usun
-            </button>
-            <button onclick="CarModule.modifyCarForm(${c.id})">
-            Modyfikuj
+            <button onclick="CarModule.deleteCar(${c.id})">Usun</button>
+            <button onclick="CarModule.modifyCarForm(${c.id})">Modyfikuj</button>
             </td>
             </tr>`
         );
@@ -74,10 +85,15 @@ const CarModule = {
             <h3>Dodaj nowy samochód</h3>
             <form id="add-car-form">
                 <label>Marka: <input type="text" id="brand" required></label><br>
+                <span id="brand-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Model: <input type="text" id="model" required></label><br>
+                <span id="model-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Rok produkcji: <input type="date" id="production_year" required></label><br>
+                <span id="production_year-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price" required></label><br>
+                <span id="daily_rental_price-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Opis: <input type="text" id="description"></label><br>
+                <span id="description-error" style="color:red; font-size:0.9em;"></span><br>
                 <button type="submit">Dodaj samochód</button>
             </form>
         `;
@@ -95,14 +111,28 @@ const CarModule = {
         };
     },
     async addCar(carData){
+        document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
+        document.getElementById('success-msg').innerText = '';
         try{
             await ApiService.post('/cars/addCar',carData);
-            alert('Samochód dodany pomyślnie!');
+             document.getElementById('success-msg').innerText = 'Użytkownik został dodany!';
+            // alert('Samochód dodany pomyślnie!');
+            document.getElementById('add-car-form').reset();
+            setTimeout(() => this.usersList(), 1500);
             this.carList();
-        }catch(error){
-            alert('Błąd podczas dodawania samochodu: '+error.message);
-        }
+        }catch (error){
+            if(error.details && Array.isArray(error.details)){
+                error.details.forEach(err => {
+                    const fieldName = err.loc[1];
+                    const span = document.getElementById(`error-${fieldName}`);
+                    if(span) span.innerText = err.msg;
+                });
+            } else {
+                alert('Błąd podczas dodawania osoby: '+error.message);
+            }}
     },
+
+
     async modifyCarForm(carId){
         try{
             
@@ -112,14 +142,21 @@ const CarModule = {
         let html=`
                 
                 <h3>Edytuj samochód</h3>
+                <span id="mod-success-msg" style="color:green; 
                 <form id="modify-car-form">
                 <label>Marka: 
                 <input type="text" id="brand" value=${car.brand} required></label><br>
+                <span id="brand-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Model:
                 <input type="text" id="model" value=${car.model} required></label><br>
+                <span id="model-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Rok produkcji: <input type="date" id="production_year" value=${car.production_year}required></label><br>
+                <span id="production_year-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Cena za dzień: <input type="number" step="0.01" id="daily_rental_price"  value=${car.daily_rental_price} required></label><br>
+                <span id="daily_rental_price-error" style="color:red; font-size:0.9em;"></span><br>
                 <label>Opis: <input type="text"  value=${car.description} id="description"></label><br>
+                <span id="description-error" style="color:red; font-size:0.9em;"></span><br>
+        
                 <button type="submit">Zaktualizuj samochód</button>
                 </form>
         `;
@@ -150,11 +187,20 @@ async deleteCar(carId){
 
 
 async modifyCar(carId,carData){
+    document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
     try{
+
         await ApiService.patch(`/cars/updateCar/${carId}`,carData)
-        alert('Samochod został zmodyfikowany')
-        this.carList()
+        document.getElementById('mod-success-msg').innerHTML = 'Samochód zmodyfikowany!';
+        setTimeout(() => this.usersList(), 1500);
     }catch (error){
+        if(error.details && Array.isArray(error.details)){
+                error.details.forEach(err => {
+                    const fieldName = err.loc[1];
+                    const span = document.getElementById(`error-${fieldName}`);
+                    if(span) span.innerText = err.msg;
+                });
+            } else {
     alert('Błąd podczas modyfikowania samochodu: '+error.message);
 }}
-}
+}}

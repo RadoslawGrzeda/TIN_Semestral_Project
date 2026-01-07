@@ -14,7 +14,9 @@ const ApiService={
         });
         if(!response.ok){
             const errorData=await response.json();
-            throw new Error(errorData.message||'Błąd podczas wysyłania danych do API');
+            const error = new Error(JSON.stringify(errorData.detail) || errorData.message || 'Błąd podczas wysyłania danych do API');
+            error.details = errorData.detail;
+            throw error;
         }
         return await response.json();
     },
@@ -27,7 +29,9 @@ const ApiService={
         });
         if(!response.ok){
             const errorData = await response.json();
-            throw new Error(errorData.detail || errorData.message || 'Błąd podczas wysyłania danych do API');
+            const error = new Error(JSON.stringify(errorData.detail) || errorData.message || 'Błąd podczas wysyłania danych do API');
+            error.details = errorData.detail;
+            throw error;
         }
         return await response.json();
     },
