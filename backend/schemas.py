@@ -4,6 +4,14 @@ from typing import Optional
 import re
 import models
 
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+    role: Optional[str] = None
+
 class UserBase(BaseModel):
     username: str = Field(..., description="The username of the user")
     email: EmailStr = Field(..., description="The email of the user")
@@ -15,8 +23,8 @@ class UserBase(BaseModel):
     def username_alphanumeric(cls, v):
         if not re.match(r'^[a-zA-Z0-9_]+$', v):
             raise ValueError('Username must be alphanumeric')
-        if not (6 <= len(v) <= 30):
-            raise ValueError('Username must be between 6 and 30 characters long')
+        if not (4 <= len(v) <= 30):
+            raise ValueError('Username must be between 4 and 30 characters long')
         return v
 
     @field_validator('date_of_birth')
@@ -184,3 +192,38 @@ class UserWithRentals(UserResponse):
 
     class Config:
         from_attributes = True
+class UserPagination(BaseModel):
+    items: list[UserResponse]
+    total: int
+    skip: int
+    limit: int
+
+class CarPagination(BaseModel):
+    items: list[CarResponse]
+    total: int
+    skip: int
+    limit: int
+
+class RentalPagination(BaseModel):
+    items: list[RentalDetail]
+    total: int
+    skip: int
+    limit: int
+
+class RentalSimplePagination(BaseModel):
+    items: list[RentalUpdate]
+    total: int
+    skip: int
+    limit: int
+
+class UserWithRentalsPagination(BaseModel):
+    items: list[UserWithRentals]
+    total: int
+    skip: int
+    limit: int
+
+class CarsWithRentalsPagination(BaseModel):
+    items: list[CarsWithRentals]
+    total: int
+    skip: int
+    limit: int

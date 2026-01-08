@@ -5,18 +5,19 @@
     <title>System Wynajmu s27383</title>
     <link rel="stylesheet" href="style.css">
     <script src="api.js"></script>
+    <script src="auth_script.js"></script>
     <script src="user_script.js"></script>
     <script src="car.script.js"></script>
     <script src="rental_script.js"></script>
 </head>
 <body>
-    <div class="sidebar">
+    <div class="sidebar" style="display:none">
         <button onclick="router('users')">Użytkownicy</button>
         <button onclick="router('cars')">Samochody</button>
         <button onclick="router('rentals')">Wynajmy</button>
-    </div>
+    </div>      
 
-    <div class="main">
+    <div class="main" style="display:none">
         <h1 id="page-title">Wybierz moduł</h1>
         <div id="function-menu" style="display:none; margin-bottom:20px;">
             <button id="btn-list">Lista</button>
@@ -33,17 +34,17 @@
             document.getElementById('display-area').innerHTML = "Wybierz akcję.";
 
             if(modul === 'users') {
-                document.getElementById('btn-list').onclick = UserModule.usersList;
-                document.getElementById('btn-details').onclick = UserModule.detailUserList;
-                document.getElementById('btn-add').onclick = UserModule.addUserForm;
+                document.getElementById('btn-list').onclick = () => UserModule.usersList();
+                document.getElementById('btn-details').onclick = () => UserModule.detailUserList();
+                document.getElementById('btn-add').onclick = () => UserModule.addUserForm();
             } else if(modul === 'cars') {
-                document.getElementById('btn-list').onclick = CarModule.carList;
-                document.getElementById('btn-details').onclick = CarModule.detailCarList;
-                document.getElementById('btn-add').onclick = CarModule.addCarForm;
+                document.getElementById('btn-list').onclick = () => CarModule.carList();
+                document.getElementById('btn-details').onclick = () => CarModule.detailCarList();
+                document.getElementById('btn-add').onclick = () => CarModule.addCarForm();
             } else if(modul === 'rentals') {
-                document.getElementById('btn-list').onclick = RentalModule.rentalsList;
-                document.getElementById('btn-details').onclick = RentalModule.detailRentalList;
-                document.getElementById('btn-add').onclick = RentalModule.addRentalForm;
+                document.getElementById('btn-list').onclick = () => RentalModule.rentalsList();
+                document.getElementById('btn-details').onclick = () => RentalModule.detailRentalList();
+                document.getElementById('btn-add').onclick = () => RentalModule.addRentalForm();
             }
         }
     </script>

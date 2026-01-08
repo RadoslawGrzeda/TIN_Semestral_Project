@@ -24,8 +24,12 @@
 
 // }
 const CarModule = {
-    async carList(){
-        const data = await ApiService.get('/cars');
+    async carList(skip=0, limit=5){
+        
+        const response = await ApiService.get(`/cars/?skip=${skip}&limit=${limit}`);
+        const data = response.items || response;
+        const total = response.total || 0;
+
         let html = `
         <h3>Lista Samochodów</h3>
         <table>
@@ -49,10 +53,19 @@ const CarModule = {
             </td>
             </tr>`
         );
-        document.getElementById('display-area').innerHTML = html + "</table>";
+        html += "</table><div id='car-pagination'></div>";
+        document.getElementById('display-area').innerHTML = html;
+
+        if(response.items){
+            Utils.renderPagination(total, skip, limit, 'car-pagination', 'CarModule.carList');
+        }
     },
-    async detailCarList(){
-        const data = await ApiService.get('/cars/showAllRelations');
+    async detailCarList(skip=0, limit=5){
+        
+        const response = await ApiService.get(`/cars/showAllRelations?skip=${skip}&limit=${limit}`);
+        const data = response.items || response; 
+        const total = response.total || 0;
+
         let html = `<h3>Lista Szczegółowa (Cars)</h3>`;
         if(!data || data.length === 0){
             document.getElementById('display-area').innerHTML = '<p>Brak samochodów</p>';
@@ -77,8 +90,13 @@ const CarModule = {
 
             html += `</div>`;
         });
-
+        
+        html += "<div id='car-detail-pagination'></div>";
         document.getElementById('display-area').innerHTML = html;
+
+        if (response.items) {
+             Utils.renderPagination(total, skip, limit, 'car-detail-pagination', 'CarModule.detailCarList');
+        }
     },
     addCarForm(){
         const html = `
@@ -177,8 +195,7 @@ const CarModule = {
     async modifyCarForm(carId){
         try{
             
-            const cars=await ApiService.get('/cars');
-            const car = cars.find(e => e.id===carId)
+            const car = await ApiService.get(`/cars/${carId}`);
 
         let html=`
                 <h3>Edytuj samochód</h3>

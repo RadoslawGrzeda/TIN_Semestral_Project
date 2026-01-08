@@ -1,6 +1,10 @@
 const RentalModule = {
-    async rentalsList(){
-        const data = await ApiService.get('/rentals');
+    async rentalsList(skip=0, limit=5){
+        
+        const response = await ApiService.get(`/rentals/?skip=${skip}&limit=${limit}`);
+        const data = response.items || response;
+        const total = response.total || 0;
+
         let html = `<h3>Lista Wypożyczeń</h3><table><tr><th>ID</th><th>ID Samochodu</th><th>ID Użytkownika</th><th>Data Wypożyczenia</th><th>Data Zwrotu</th><th>Akcje</th></tr>`;
         data.forEach(r => html += `<tr><td>${r.id}</td><td>${r.car_id}</td><td>${r.user_id}</td><td>${r.rental_start}</td><td>${r.rental_end}</td>
             <td><button onclick='RentalModule.deleteRental(${r.id})'>Usuń
@@ -10,11 +14,18 @@ const RentalModule = {
             </td>
             </tr>`);
 
-
-        document.getElementById('display-area').innerHTML = html + "</table>";
+        html += "</table><div id='rental-pagination'></div>";
+        document.getElementById('display-area').innerHTML = html;
+        if(response.items){
+            Utils.renderPagination(total, skip, limit, 'rental-pagination', 'RentalModule.rentalsList');
+        }
     },
-    async detailRentalList(){
-        const data=await ApiService.get('/rentals/detailedList');
+    async detailRentalList(skip=0, limit=5){
+        
+        const response=await ApiService.get(`/rentals/detailedList?skip=${skip}&limit=${limit}`);
+        const data = response.items || response;
+        const total = response.total || 0;
+
         let html=`
         <h3>Lista Szczegółowa Wypożyczeń</h3>
         <table>
@@ -27,7 +38,12 @@ const RentalModule = {
         <th>Data Zwrotu</th>
         </tr>`;
         data.forEach(r=>html+=`<tr><td>${r.car.brand}</td><td>${r.car.model}</td><td>${r.user.username}</td><td>${r.user.email}</td><td>${r.rental_start}</td><td>${r.rental_end}</td></tr>`);
-        document.getElementById('display-area').innerHTML=html+"</table>";
+        html += "</table><div id='rental-detail-pagination'></div>";
+        document.getElementById('display-area').innerHTML=html;
+
+        if(response.items){
+            Utils.renderPagination(total, skip, limit, 'rental-detail-pagination', 'RentalModule.detailRentalList');
+        }
     },
      addRentalForm(){
         const html =`
@@ -136,8 +152,7 @@ const RentalModule = {
     }},
     async modifyRentalForm(rental_id){
         try{
-        const rentals = await ApiService.get(`/rentals`);
-        const rental = rentals.find(r => r.id === rental_id);
+        const rental = await ApiService.get(`/rentals/${rental_id}`);
         const html=`
         <h3>Modyfikuj wypożyczenie ID: ${rental_id}</h3>
         <span id="success-msg" style="color:green; font-weight:bold;"></span>

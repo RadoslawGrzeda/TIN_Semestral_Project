@@ -1,12 +1,13 @@
 from fastapi import FastAPI
 import models
 from database import engine
-from routers import users,cars,rentals
+from routers import users,cars,rentals,auth
 from fastapi.middleware.cors import CORSMiddleware
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
 
+app.include_router(auth.router)
 app.include_router(users.router)
 app.include_router(cars.router)
 app.include_router(rentals.router)

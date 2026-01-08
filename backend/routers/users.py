@@ -9,14 +9,19 @@ router=APIRouter(
     tags=["users"]
 )
 
-@router.get("/",response_model=list[schemas.UserResponse])
-def get_users(db:Session=Depends(get_db)):
-    users=db.query(models.User).all()
-    return users   
+@router.get("/",response_model=schemas.UserPagination)
+def get_users(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
+    users=db.query(models.User).offset(skip).limit(limit).all()
+    count=db.query(models.User).count()
+    return {"items": users, "total": count, "skip": skip, "limit": limit}   
 
-@router.get("/showAllRelations", response_model=list[schemas.UserWithRentals])
-def get_users_with_relations(db:Session=Depends(get_db)):
-    users = db.query(models.User).all()
+
+
+
+@router.get("/showAllRelations", response_model=schemas.UserWithRentalsPagination)
+def get_users_with_relations(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
+    users = db.query(models.User).offset(skip).limit(limit).all()
+    count = db.query(models.User).count()
     result = []
     for user in users:
         rentals_out = []
@@ -48,7 +53,7 @@ def get_users_with_relations(db:Session=Depends(get_db)):
             "rentals": rentals_out
         }
         result.append(user_obj)
-    return result
+    return {"items": result, "total": count, "skip": skip, "limit": limit}
 
 @router.delete('/deleteUser/{user_id}')
 def delete_user(user_id: int, db: Session = Depends(get_db)):
@@ -89,3 +94,16 @@ def add_user(user:schemas.UserCreate,db:Session = Depends(get_db)):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+from auth import get_current_user
+
+@router.get("/me", response_model=schemas.UserResponse)
+def read_users_me(current_user: models.User = Depends(get_current_user)):
+    return current_user
+
+@router.get("/{user_id}", response_model=schemas.UserResponse)
+def get_user(user_id: int, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user

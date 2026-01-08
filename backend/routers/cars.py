@@ -8,14 +8,16 @@ router = APIRouter(
         tags=['car']
     )
 
-@router.get('/',response_model=list[schemas.CarResponse])
-def get_cars(db:Session = Depends(get_db)):
-    cars = db.query(models.Car).all()
-    return cars
+@router.get('/',response_model=schemas.CarPagination)
+def get_cars(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
+    cars = db.query(models.Car).offset(skip).limit(limit).all()
+    count = db.query(models.Car).count()
+    return {"items": cars, "total": count, "skip": skip, "limit": limit}
 
-@router.get("/showAllRelations", response_model=list[schemas.CarsWithRentals])
-def get_cars_with_relations(db:Session=Depends(get_db)):
-    cars=db.query(models.Car).all()
+@router.get("/showAllRelations", response_model=schemas.CarsWithRentalsPagination)
+def get_cars_with_relations(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
+    cars=db.query(models.Car).offset(skip).limit(limit).all()
+    count = db.query(models.Car).count()
     result=[]
     for car in cars:
         rentals_out=[]
@@ -27,7 +29,8 @@ def get_cars_with_relations(db:Session=Depends(get_db)):
                     "id": user.id,
                     "username": user.username,
                     "email": user.email,
-                    "date_of_birth": user.date_of_birth
+                    "date_of_birth": user.date_of_birth,
+                    "role": user.role
                 }
             rentals_out.append({
                 "id":r.id,
@@ -45,7 +48,14 @@ def get_cars_with_relations(db:Session=Depends(get_db)):
             "rentals":rentals_out
         }
         result.append(car_obj)
-    return result
+    return {"items": result, "total": count, "skip": skip, "limit": limit}
+
+@router.get('/{car_id}', response_model=schemas.CarBase)
+def get_car(car_id: int, db: Session = Depends(get_db)):
+    car = db.query(models.Car).filter(models.Car.id == car_id).first()
+    if not car:
+        raise HTTPException(status_code=404, detail="Car not found")
+    return car
 
 @router.post('/addCar',response_model=schemas.CarBase)
 def add_car(car:schemas.CarBase,db: Session = Depends(get_db)):

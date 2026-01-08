@@ -8,16 +8,24 @@ router = APIRouter(
     tags=['rental']
 )
 
-@router.get('/',response_model=list[schemas.RentalUpdate])
-def get_rentals(db:Session = Depends(get_db)):
-    rentals = db.query(models.Rental).all()
-    return rentals
+@router.get('/',response_model=schemas.RentalSimplePagination)
+def get_rentals(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
+    rentals = db.query(models.Rental).offset(skip).limit(limit).all()
+    count = db.query(models.Rental).count()
+    return {"items": rentals, "total": count, "skip": skip, "limit": limit}
 
-@router.get('/detailedList',response_model=list[schemas.RentalDetail])
-def get_detailed_rentals(db:Session = Depends(get_db)):
-    rentals = db.query(models.Rental).all()
+@router.get('/detailedList',response_model=schemas.RentalPagination)
+def get_detailed_rentals(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
+    rentals = db.query(models.Rental).offset(skip).limit(limit).all()
+    count = db.query(models.Rental).count()
+    return {"items": rentals, "total": count, "skip": skip, "limit": limit}
 
-    return rentals
+@router.get('/{rental_id}', response_model=schemas.RentalBase)
+def get_rental(rental_id: int, db: Session = Depends(get_db)):
+    rental = db.query(models.Rental).filter(models.Rental.id == rental_id).first()
+    if not rental:
+        raise HTTPException(status_code=404, detail="Rental not found")
+    return rental
 
 @router.post('/addRental',response_model=schemas.RentalBase)
 def addRental(rental:schemas.RentalBase,db:Session = Depends(get_db)):

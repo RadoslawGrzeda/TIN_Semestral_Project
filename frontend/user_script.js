@@ -1,12 +1,36 @@
 const UserModule = {
-    async usersList() {
-    const data = await ApiService.get('/users');
-    let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th><th>Akcje</th></tr>`;
-        data.forEach(u => html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td><button onclick="UserModule.deleteUser(${u.id})">Usuń</button><button onclick="UserModule.modifyUserForm(${u.id})">Modyfikuj</button></td></tr>`);
-        document.getElementById('display-area').innerHTML = html + "</table>";
+    async usersList(skip=0, limit=5) {
+        
+        const response = await ApiService.get(`/users/?skip=${skip}&limit=${limit}`);
+        const data = response.items || response;  
+        const total = response.total || 0;
+
+        let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th><th>Akcje</th></tr>`;
+        const role = localStorage.getItem('user_role');
+        
+        data.forEach(u => {
+            html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td>`;
+            if (role === 'admin') {
+                html += `<button onclick="UserModule.deleteUser(${u.id})">Usuń</button><button onclick="UserModule.modifyUserForm(${u.id})">Modyfikuj</button>`;
+                // Auto-promote logic if needed
+            } else {
+                html += `<button disabled title="Tylko administrator może edytować">Brak akcji</button>`;
+            }
+            html += `</td></tr>`;
+        });
+        html += "</table><div id='user-pagination'></div>";
+        document.getElementById('display-area').innerHTML = html;
+
+        if (response.items) {
+             Utils.renderPagination(total, skip, limit, 'user-pagination', 'UserModule.usersList');
+        }
     },
-    async detailUserList(){
-        const data = await ApiService.get('/users/showAllRelations');
+    async detailUserList(skip=0, limit=5){
+        
+        const response = await ApiService.get(`/users/showAllRelations?skip=${skip}&limit=${limit}`);
+        const data = response.items || response;
+        const total = response.total || 0;
+        
         let html = `<h3>Lista Szczegółowa (Users)</h3>`;
         if(!data || data.length === 0){
             document.getElementById('display-area').innerHTML = '<p>Brak użytkowników</p>';
@@ -31,8 +55,13 @@ const UserModule = {
 
             html += `</div>`;
         });
-
+        
+        html += "<div id='user-detail-pagination'></div>";
         document.getElementById('display-area').innerHTML = html;
+
+        if (response.items) {
+             Utils.renderPagination(total, skip, limit, 'user-detail-pagination', 'UserModule.detailUserList');
+        }
     },
     addUserForm(){
         const html =`
@@ -127,8 +156,7 @@ const UserModule = {
     },
     async modifyUserForm(userId){
         try{
-            const users=await ApiService.get('/users');
-            const user=users.find(u=>u.id===userId);
+            const user = await ApiService.get(`/users/${userId}`);
 
             let html=`
             <h3>Modyfikuj uzytkownika</h3>
