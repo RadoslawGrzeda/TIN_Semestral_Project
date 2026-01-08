@@ -5,7 +5,7 @@ const UserModule = {
         const data = response.items || response;  
         const total = response.total || 0;
 
-        let html = `<h3>Lista Uproszczona (Users)</h3><table><tr><th>Login</th><th>Email</th><th>Date of Birth</th><th>Akcje</th></tr>`;
+        let html = `<h3>${t('users_list_simple')}</h3><table><tr><th>${t('user_login')}</th><th>${t('user_email')}</th><th>${t('user_dob')}</th><th>${t('actions')}</th></tr>`;
         const role = localStorage.getItem('user_role');
         
         data.forEach(u => {
@@ -13,10 +13,10 @@ const UserModule = {
                  return; 
             html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td>`;
             if (role === 'admin') {
-                html += `<button onclick="UserModule.deleteUser(${u.id})">Usuń</button><button onclick="UserModule.modifyUserForm(${u.id})">Modyfikuj</button>`;
+                html += `<button onclick="UserModule.deleteUser(${u.id})">${t('delete')}</button><button onclick="UserModule.modifyUserForm(${u.id})">${t('modify')}</button>`;
                 // Auto-promote logic if needed
             } else {
-                html += `<button disabled title="Tylko administrator może edytować">Brak akcji</button>`;
+                html += `<button disabled title="${t('only_admin')}">${t('no_action')}</button>`;
             }
             html += `</td></tr>`;
         });
@@ -33,26 +33,26 @@ const UserModule = {
         const data = response.items || response;
         const total = response.total || 0;
         
-        let html = `<h3>Lista Szczegółowa (Users)</h3>`;
+        let html = `<h3>${t('users_list_detailed')}</h3>`;
         if(!data || data.length === 0){
-            document.getElementById('display-area').innerHTML = '<p>Brak użytkowników</p>';
+            document.getElementById('display-area').innerHTML = `<p>${t('no_users_found')}</p>`;
             return;
         }
 
         data.forEach(u => {
             html += `<div class="user-card">`;
             html += `<h4>${u.username} (ID: ${u.id})</h4>`;
-            html += `<p><strong>Email:</strong> ${u.email} &nbsp; <strong>Data urodzenia:</strong> ${u.date_of_birth} &nbsp; <strong>Rola:</strong> ${u.role}</p>`;
+            html += `<p><strong>${t('user_email')}:</strong> ${u.email} &nbsp; <strong>${t('user_dob')}:</strong> ${u.date_of_birth} &nbsp; <strong>${t('user_role')}:</strong> ${u.role}</p>`;
 
             if(u.rentals && u.rentals.length > 0){
-                html += `<details><summary>Wypożyczenia (${u.rentals.length})</summary><ul>`;
+                html += `<details><summary>${t('menu_rentals')} (${u.rentals.length})</summary><ul>`;
                 u.rentals.forEach(r => {
                     const car = r.car || {};
-                    html += `<li>Rezerwacja ID ${r.id}: ${r.rental_start} → ${r.rental_end ?? 'aktualne'} — Samochód: ${car.brand ?? '—'} ${car.model ?? ''} (ID: ${car.id ?? '—'})</li>`;
+                    html += `<li>ID ${r.id}: ${r.rental_start} → ${r.rental_end ?? '...'} — ${car.brand ?? '-'} ${car.model ?? ''} (ID: ${car.id ?? '-'})</li>`;
                 });
                 html += `</ul></details>`;
             } else {
-                html += `<p><em>Brak wypożyczeń</em></p>`;
+                html += `<p><em>${t('no_rentals')}</em></p>`;
             }
 
             html += `</div>`;
@@ -67,22 +67,22 @@ const UserModule = {
     },
     addUserForm(){
         const html =`
-        <h3>Dodaj nowego uzytkownika</h3>
+        <h3>${t('user_add_new')}</h3>
         <span id="success-msg" style="color:green; font-weight:bold;"></span>
         <form id='add-user-form' novalidate>
-            <label>Username: <input type='text' id='username' required></label><br>
+            <label>${t('user_login')}: <input type='text' id='username' required></label><br>
             <span id="error-username" style="color:red; font-size:0.9em;"></span><br>
 
-            <label>Email: <input type='email' id='email' required></label><br>
+            <label>${t('user_email')}: <input type='email' id='email' required></label><br>
             <span id="error-email" style="color:red; font-size:0.9em;"></span><br>
 
-            <label>Data urodzenia: <input type='date' id='date_of_birth' required></label><br>
+            <label>${t('user_dob')}: <input type='date' id='date_of_birth' required></label><br>
             <span id="error-date_of_birth" style="color:red; font-size:0.9em;"></span><br>
 
-            <label>Password: <input type='password' id='password' required></label><br>
+            <label>${t('auth_password')}: <input type='password' id='password' required></label><br>
             <span id="error-password" style="color:red; font-size:0.9em;"></span><br>
 
-            <button type='submit'> Dodaj uzytkownika </button>
+            <button type='submit'> ${t('btn_add')} </button>
         </form>
         `;
         document.getElementById('display-area').innerHTML = html;
@@ -99,7 +99,7 @@ const UserModule = {
             
             const username = document.getElementById('username').value;
             if(!/^[a-zA-Z0-9_]{6,30}$/.test(username)) {
-                document.getElementById('error-username').innerText = "Username must be between 6 and 30 characters long, letters, digits, and _ only";
+                document.getElementById('error-username').innerText = t('err_username_format');
                 isValid = false;
             }
             
@@ -113,21 +113,21 @@ const UserModule = {
                     age--;
                 }
                 if(age < 18) {
-                    document.getElementById('error-date_of_birth').innerText = "User must be at least 18 years old";
+                    document.getElementById('error-date_of_birth').innerText = t('err_age_limit');
                     isValid = false;
                 }
             }
 
             const pwd = document.getElementById('password').value;
             if(pwd.length < 8) {
-                document.getElementById('error-password').innerText = "Password must be at least 8 characters long";
+                document.getElementById('error-password').innerText = t('err_password_min');
                 isValid = false;
             }
 
             const email= document.getElementById('email').value;
             const us=users.filter(u=>u.email===email);
             if(us.length > 0){   
-                document.getElementById('error-email').innerText = "Email is already in use";
+                document.getElementById('error-email').innerText = t('err_email_in_use');
                 isValid = false;
             }
 
@@ -149,10 +149,10 @@ const UserModule = {
     async deleteUser(userId){
         try{
             await ApiService.delete(`/users/deleteUser/${userId}`);
-            alert('uzytkownik usuniety');
+            alert(t('user_mod_success')); // Or generic success/deleted message
             this.usersList()
         }catch (error){
-            alert('Błąd podczas usuwania osoby: '+error.message);
+            alert('Error: '+error.message);
         }
     },
     async modifyUserForm(userId){
@@ -160,22 +160,22 @@ const UserModule = {
             const user = await ApiService.get(`/users/${userId}`);
 
             let html=`
-            <h3>Modyfikuj uzytkownika</h3>
+            <h3>${t('user_mod_title')}</h3>
             <span id="mod-success-msg" style="color:green; font-weight:bold;"></span>
             <form id='modify-user-form'>
-                <label>Username: <input type='text' id='mod-username' value="${user.username}" required></label><br>
+                <label>${t('user_login')}: <input type='text' id='mod-username' value="${user.username}" required></label><br>
                 <span id="error-username" style="color:red; font-size:0.9em;"></span><br>
 
-                <label>Email: <input type='email' id='mod-email' value="${user.email}" required></label><br>
+                <label>${t('user_email')}: <input type='email' id='mod-email' value="${user.email}" required></label><br>
                 <span id="error-email" style="color:red; font-size:0.9em;"></span><br>
 
-                <label>Data urodzenia: <input type='date' id='mod-date_of_birth' value="${user.date_of_birth}" required></label><br>
+                <label>${t('user_dob')}: <input type='date' id='mod-date_of_birth' value="${user.date_of_birth}" required></label><br>
                 <span id="error-date_of_birth" style="color:red; font-size:0.9em;"></span><br>
 
-                <label>Password: <input type='password' id='mod-password' placeholder="Pozostaw puste aby nie zmieniać"></label><br>
+                <label>${t('auth_password')}: <input type='password' id='mod-password' placeholder="${t('placeholder_no_change')}"></label><br>
                 <span id="error-password" style="color:red; font-size:0.9em;"></span><br>
 
-                <button type='submit'> Zmodyfikuj uzytkownika </button>
+                <button type='submit'> ${t('modify')} </button>
             </form>
             `;
             document.getElementById('display-area').innerHTML = html;
@@ -187,7 +187,7 @@ const UserModule = {
                 
                 const username = document.getElementById('mod-username').value;
                 if(!/^[a-zA-Z0-9_]{6,30}$/.test(username)) {
-                    document.getElementById('error-username').innerText = "Username must be between 6 and 30 characters long, letters, digits, and _ only";
+                    document.getElementById('error-username').innerText = t('err_username_format');
                     isValid = false;
                 }
                 
@@ -201,14 +201,14 @@ const UserModule = {
                         age--;
                     }
                     if(age < 18) {
-                        document.getElementById('error-date_of_birth').innerText = "User must be at least 18 years old  ";
+                        document.getElementById('error-date_of_birth').innerText = t('err_age_limit');
                         isValid = false;
                     }
                 }
 
                 const pwd = document.getElementById('mod-password').value;
                 if(pwd && pwd.length < 8) {
-                    document.getElementById('error-password').innerText = "Password must be at least 8 characters long";
+                    document.getElementById('error-password').innerText = t('err_password_min');
                     isValid = false;
                 }
 
@@ -224,7 +224,7 @@ const UserModule = {
                 UserModule.modifyUser(userId,userData);
             }
         }catch (error){
-            alert('Błąd podczas modyfikowania osoby: '+error.message);
+            alert('Error: '+error.message);
         }  },
     async modifyUser(userId,userData){
 
@@ -232,7 +232,7 @@ const UserModule = {
         
         try{
             await ApiService.patch(`/users/updateUser/${userId}`,userData);
-            document.getElementById('mod-success-msg').innerText = 'Użytkownik zmodyfikowany!';
+            document.getElementById('mod-success-msg').innerText = t('user_mod_success');
             setTimeout(() => this.usersList(), 1500);
         }catch (error){
              if(error.details && Array.isArray(error.details)){
@@ -242,7 +242,7 @@ const UserModule = {
                     if(span) span.innerText = err.msg;
                 });
             } else {
-                alert('Błąd podczas modyfikowania osoby: '+error.message);
+                alert('Error: '+error.message);
             }
         }
     },
@@ -252,7 +252,7 @@ const UserModule = {
 
         try{
             await ApiService.post('/users/addUser',userData);
-            document.getElementById('success-msg').innerText = 'Użytkownik został dodany!';
+            document.getElementById('success-msg').innerText = t('user_added_success');
             document.getElementById('add-user-form').reset();
             setTimeout(() => this.usersList(), 1500);
         }catch (error){
@@ -263,7 +263,7 @@ const UserModule = {
                     if(span) span.innerText = err.msg;
                 });
             } else {
-                alert('Błąd podczas dodawania osoby: '+error.message);
+                alert('Error: '+error.message);
             }
         }
     },

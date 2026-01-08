@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>System Wynajmu s27383</title>
     <link rel="stylesheet" href="style.css">
+    <script src="i18n.js"></script>
     <script src="api.js"></script>
     <script src="auth_script.js"></script>
     <script src="user_script.js"></script>
@@ -11,10 +12,15 @@
     <script src="rental_script.js"></script>
 </head>
 <body>
+    <div style="position:absolute; top:10px; right:10px;">
+        <button onclick="setLanguage('pl')">PL</button>
+        <button onclick="setLanguage('en')">EN</button>
+    </div>
+
     <div class="sidebar" style="display:none">
-        <button onclick="router('users')">Użytkownicy</button>
-        <button onclick="router('cars')">Samochody</button>
-        <button onclick="router('rentals')">Wynajmy</button>
+        <button onclick="router('users')" id="menu-users">Użytkownicy</button>
+        <button onclick="router('cars')" id="menu-cars">Samochody</button>
+        <button onclick="router('rentals')" id="menu-rentals">Wynajmy</button>
     </div>      
 
     <div class="main" style="display:none">
@@ -28,10 +34,23 @@
     </div>
     
     <script>
+        // Apply translations on load
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('menu-users').innerText = t('menu_users');
+            document.getElementById('menu-cars').innerText = t('menu_cars');
+            document.getElementById('menu-rentals').innerText = t('menu_rentals');
+            
+            // Initial buttons text
+            document.getElementById('btn-list').innerText = t('btn_list');
+            document.getElementById('btn-details').innerText = t('btn_details');
+            document.getElementById('btn-add').innerText = t('btn_add');
+            document.getElementById('page-title').innerText = t('page_title_manage'); // Should be generic title initially? Or "Check module"
+        });
+
         function router(modul) {
             document.getElementById('function-menu').style.display = 'block';
-            document.getElementById('page-title').innerText = "Zarządzanie: " + modul.toUpperCase();
-            document.getElementById('display-area').innerHTML = "Wybierz akcję.";
+            document.getElementById('page-title').innerText = t('page_title_manage') + t('menu_' + modul);
+            document.getElementById('display-area').innerHTML = t('select_action');
 
             // Role check
             const role = localStorage.getItem('user_role');

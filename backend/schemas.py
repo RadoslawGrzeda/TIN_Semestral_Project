@@ -56,44 +56,6 @@ class UserResponse(UserBase):
     class Config:
         from_attributes = True
 
-    
-
-    
-
-# class UserUpdate(BaseModel):
-#     username: Optional[str] = Field(None, description="The username of the user")
-#     email: Optional[EmailStr] = Field(None, description="The email of the user")
-#     date_of_birth: Optional[date] = Field(None, description="The date of birth of the user in YYYY-MM-DD format")
-#     role: Optional[str] = Field(None, description="The role of the user")
-#     password: Optional[str] = Field(None, min_length=8, description="The password of the user")
-
-#     @field_validator('username')
-#     def username_alphanumeric(cls, v):
-#         if v is not None and not re.match(r'^[a-zA-Z0-9_]+$', v):
-#             raise ValueError('Username must be alphanumeric')
-#         return v
-
-#     @field_validator('date_of_birth')
-#     def check_age(cls, v):
-#         if v is not None:
-#             today = date.today()
-#             age = today.year - v.year - ((today.month, today.day) < (v.month, v.day))
-#             if age < 18:
-#                 raise ValueError('User must be at least 18 years old')
-#         return v
-
-    # class Config:
-    #     from_attributes = True
-
-    # @field_validator('password')
-    # def password_strength(cls, v):
-    #     if (len(v) < 8 or
-    #         not re.search(r'[A-Z]', v) or
-    #         not re.search(r'[a-z]', v) or
-    #         not re.search(r'[0-9]', v) or
-    #         not re.search(r'[\W_]', v)):
-    #         raise ValueError('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character')
-        # return v
 
 class CarBase(BaseModel):
     brand: str = Field(..., description="The brand of the car")

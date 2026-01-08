@@ -25,7 +25,7 @@ const AuthModule = {
             if (!document.getElementById('btn-logout')) {
                 const btn = document.createElement('button');
                 btn.id = 'btn-logout';
-                btn.innerText = 'Wyloguj (' + (localStorage.getItem('username') || 'User') + ')';
+                btn.innerText = t('btn_logout') + ' (' + (localStorage.getItem('username') || 'User') + ')';
                 btn.style.marginTop = '20px';
                 btn.onclick = () => this.logout();
                 sidebar.appendChild(btn);
@@ -56,12 +56,12 @@ const AuthModule = {
 
         loginArea.innerHTML = `
             <div style="max-width:300px; margin:auto; padding:20px; border:1px solid #ccc; border-radius:8px; background:white;">
-                <h2>Logowanie</h2>
+                <h2>${t('auth_login_title')}</h2>
                 <form onsubmit="event.preventDefault(); AuthModule.handleLogin();">
-                    <input type="text" id="login-username" placeholder="Login" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <input type="password" id="login-password" placeholder="Hasło" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <button type="submit" style="width:100%; padding:10px; background:#2c3e50; color:white; border:none; cursor:pointer;">Zaloguj</button>
-                    <button type="button" onclick="AuthModule.showRegisterForm()" style="width:100%; padding:10px; margin-top:5px; background:none; border:none; color:blue; cursor:pointer;">Zarejestruj się</button>
+                    <input type="text" id="login-username" placeholder="${t('user_login')}" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
+                    <input type="password" id="login-password" placeholder="${t('auth_password')}" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
+                    <button type="submit" style="width:100%; padding:10px; background:#2c3e50; color:white; border:none; cursor:pointer;">${t('auth_login_btn')}</button>
+                    <button type="button" onclick="AuthModule.showRegisterForm()" style="width:100%; padding:10px; margin-top:5px; background:none; border:none; color:blue; cursor:pointer;">${t('auth_register_link')}</button>
                 </form>
                 <p id="login-message" style="color:red; margin-top:10px;"></p>
             </div>
@@ -74,15 +74,15 @@ const AuthModule = {
 
         loginArea.innerHTML = `
             <div style="max-width:300px; margin:auto; padding:20px; border:1px solid #ccc; border-radius:8px; background:white;">
-                <h2>Rejestracja</h2>
+                <h2>${t('auth_register_title')}</h2>
                 <form onsubmit="event.preventDefault(); AuthModule.handleRegister();">
-                    <input type="text" id="reg-username" placeholder="Login" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <input type="email" id="reg-email" placeholder="Email" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <input type="password" id="reg-password" placeholder="Hasło" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <label style="display:block; text-align:left; font-size:0.8em; color:#666;">Data urodzenia</label>
+                    <input type="text" id="reg-username" placeholder="${t('user_login')}" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
+                    <input type="email" id="reg-email" placeholder="${t('user_email')}" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
+                    <input type="password" id="reg-password" placeholder="${t('auth_password')}" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
+                    <label style="display:block; text-align:left; font-size:0.8em; color:#666;">${t('auth_dob')}</label>
                     <input type="date" id="reg-dob" required style="width:100%; margin-bottom:10px; padding:8px;"><br>
-                    <button type="submit" style="width:100%; padding:10px; background:#27ae60; color:white; border:none; cursor:pointer;">Zarejestruj</button>
-                    <button type="button" onclick="AuthModule.showLoginForm()" style="width:100%; padding:10px; margin-top:5px; background:none; border:none; color:blue; cursor:pointer;">Wróć</button>
+                    <button type="submit" style="width:100%; padding:10px; background:#27ae60; color:white; border:none; cursor:pointer;">${t('auth_register_btn')}</button>
+                    <button type="button" onclick="AuthModule.showLoginForm()" style="width:100%; padding:10px; margin-top:5px; background:none; border:none; color:blue; cursor:pointer;">${t('auth_back')}</button>
                 </form>
                 <p id="reg-message" style="color:red; margin-top:10px;"></p>
             </div>
