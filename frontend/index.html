@@ -33,18 +33,29 @@
             document.getElementById('page-title').innerText = "Zarządzanie: " + modul.toUpperCase();
             document.getElementById('display-area').innerHTML = "Wybierz akcję.";
 
+            // Role check
+            const role = localStorage.getItem('user_role');
+            const btnAdd = document.getElementById('btn-add');
+
+            // Show/Hide Add button based on role
+            if (role === 'admin') {
+                btnAdd.style.display = 'inline-block';
+            } else {
+                btnAdd.style.display = 'none';
+            }
+
             if(modul === 'users') {
                 document.getElementById('btn-list').onclick = () => UserModule.usersList();
                 document.getElementById('btn-details').onclick = () => UserModule.detailUserList();
-                document.getElementById('btn-add').onclick = () => UserModule.addUserForm();
+                if(role === 'admin') document.getElementById('btn-add').onclick = () => UserModule.addUserForm();
             } else if(modul === 'cars') {
                 document.getElementById('btn-list').onclick = () => CarModule.carList();
                 document.getElementById('btn-details').onclick = () => CarModule.detailCarList();
-                document.getElementById('btn-add').onclick = () => CarModule.addCarForm();
+                if(role === 'admin') document.getElementById('btn-add').onclick = () => CarModule.addCarForm();
             } else if(modul === 'rentals') {
                 document.getElementById('btn-list').onclick = () => RentalModule.rentalsList();
                 document.getElementById('btn-details').onclick = () => RentalModule.detailRentalList();
-                document.getElementById('btn-add').onclick = () => RentalModule.addRentalForm();
+                if(role === 'admin') document.getElementById('btn-add').onclick = () => RentalModule.addRentalForm();
             }
         }
     </script>

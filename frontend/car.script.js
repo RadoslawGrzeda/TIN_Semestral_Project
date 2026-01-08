@@ -40,19 +40,27 @@ const CarModule = {
         <th>Cena/dzień</th>
         <th>Akcje</th>
         </tr>`;
-        data.forEach(c => 
+
+        const role = localStorage.getItem('user_role');
+
+        data.forEach(c => {
             html += `
             <tr>
             <td>${c.brand}</td>
             <td>${c.model}</td>
             <td>${c.production_year}</td>
             <td>${c.daily_rental_price}</td>
-            <td>
-            <button onclick="CarModule.deleteCar(${c.id})">Usun</button>
-            <button onclick="CarModule.modifyCarForm(${c.id})">Modyfikuj</button>
-            </td>
-            </tr>`
-        );
+            <td>`;
+            
+            if (role === 'admin') {
+                html += `<button onclick="CarModule.deleteCar(${c.id})">Usun</button>
+                         <button onclick="CarModule.modifyCarForm(${c.id})">Modyfikuj</button>`;
+            } else {
+                html += `<button disabled title="Tylko administrator może edytować">Brak akcji</button>`;
+            }
+            
+            html += `</td></tr>`;
+        });
         html += "</table><div id='car-pagination'></div>";
         document.getElementById('display-area').innerHTML = html;
 

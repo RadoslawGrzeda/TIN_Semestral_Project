@@ -6,13 +6,20 @@ const RentalModule = {
         const total = response.total || 0;
 
         let html = `<h3>Lista Wypożyczeń</h3><table><tr><th>ID</th><th>ID Samochodu</th><th>ID Użytkownika</th><th>Data Wypożyczenia</th><th>Data Zwrotu</th><th>Akcje</th></tr>`;
-        data.forEach(r => html += `<tr><td>${r.id}</td><td>${r.car_id}</td><td>${r.user_id}</td><td>${r.rental_start}</td><td>${r.rental_end}</td>
-            <td><button onclick='RentalModule.deleteRental(${r.id})'>Usuń
-            </button>
-            <button onclick='RentalModule.modifyRentalForm(${r.id})'>Modyfikuj
-            </button>    
-            </td>
-            </tr>`);
+        const role = localStorage.getItem('user_role');
+
+        data.forEach(r => {
+            html += `<tr><td>${r.id}</td><td>${r.car_id}</td><td>${r.user_id}</td><td>${r.rental_start}</td><td>${r.rental_end}</td><td>`;
+            
+            if (role === 'admin') {
+                html += `<button onclick='RentalModule.deleteRental(${r.id})'>Usuń</button>
+                         <button onclick='RentalModule.modifyRentalForm(${r.id})'>Modyfikuj</button>`;
+            } else {
+                html += `<button disabled title="Tylko administrator może edytować">Brak akcji</button>`;
+            }
+            
+            html += `</td></tr>`;
+        });
 
         html += "</table><div id='rental-pagination'></div>";
         document.getElementById('display-area').innerHTML = html;
@@ -71,12 +78,11 @@ const RentalModule = {
             e.preventDefault();
             // Frontend Validation
             try{
-                const cars=await ApiService.get('/cars');
-                const users=await ApiService.get('/users');
+                const carsResp = await ApiService.get('/cars');
+                const cars = carsResp.items || carsResp;
+                const usersResp = await ApiService.get('/users');
+                const users = usersResp.items || usersResp;
 
-
-
-            
             document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
             let isValid = true;
 

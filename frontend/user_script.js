@@ -9,6 +9,8 @@ const UserModule = {
         const role = localStorage.getItem('user_role');
         
         data.forEach(u => {
+            if(u.role === 'admin' )
+                 return; 
             html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td>`;
             if (role === 'admin') {
                 html += `<button onclick="UserModule.deleteUser(${u.id})">Usuń</button><button onclick="UserModule.modifyUserForm(${u.id})">Modyfikuj</button>`;
@@ -89,11 +91,9 @@ const UserModule = {
             
             e.preventDefault();
 
-            const users=await ApiService.get('/users');
+            const usersResp = await ApiService.get('/users');
+            const users = usersResp.items || usersResp;
 
-            
-
-            
             document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
             let isValid = true;
             
@@ -125,7 +125,8 @@ const UserModule = {
             }
 
             const email= document.getElementById('email').value;
-            if(users.some(u => u.email === email)) {
+            const us=users.filter(u=>u.email===email);
+            if(us.length > 0){   
                 document.getElementById('error-email').innerText = "Email is already in use";
                 isValid = false;
             }
