@@ -120,14 +120,18 @@ class RentalUpdate(RentalBase):
     id: int= Field(..., description="The unique identifier of the rental")
 
 class RentalDetail(RentalBase):
-    car: CarResponse
-    user: UserResponse
+    car: Optional[CarResponse] = None
+    user: Optional[UserResponse] = None
+
+    class Config:
+        from_attributes = True
+
 
 class RentalOut(BaseModel):
     id: int
     rental_start: date
     rental_end: Optional[date] = None
-    car: CarResponse
+    car: Optional[CarResponse] = None
 
     class Config:
         from_attributes = True
@@ -136,7 +140,7 @@ class RentalOutUser(BaseModel):
     id: int
     rental_start: date
     rental_end: Optional[date] = None
-    user: UserResponse
+    user: Optional[UserResponse] = None # Allow user to be None if deleted
 
     class Config:
         from_attributes = True

@@ -14,6 +14,9 @@ def get_cars(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
     count = db.query(models.Car).count()
     return {"items": cars, "total": count, "skip": skip, "limit": limit}
 
+
+
+
 @router.get("/showAllRelations", response_model=schemas.CarsWithRentalsPagination)
 def get_cars_with_relations(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
     cars=db.query(models.Car).offset(skip).limit(limit).all()
@@ -36,7 +39,7 @@ def get_cars_with_relations(skip: int = 0, limit: int = 10, db:Session=Depends(g
                 "id":r.id,
                 "rental_start":r.rental_start,
                 "rental_end":r.rental_end,
-                "user":user_obj
+                "user":user_obj # Pydantic expects a valid object or dict, but if user is None, it might fail depending on schema.
             })
         car_obj={
             "id":car.id,

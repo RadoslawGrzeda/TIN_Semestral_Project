@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from database import get_db
 import models, schemas
 
@@ -16,7 +16,7 @@ def get_rentals(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
 
 @router.get('/detailedList',response_model=schemas.RentalPagination)
 def get_detailed_rentals(skip: int = 0, limit: int = 10, db:Session = Depends(get_db)):
-    rentals = db.query(models.Rental).offset(skip).limit(limit).all()
+    rentals = db.query(models.Rental).options(joinedload(models.Rental.car), joinedload(models.Rental.user)).offset(skip).limit(limit).all()
     count = db.query(models.Rental).count()
     return {"items": rentals, "total": count, "skip": skip, "limit": limit}
 

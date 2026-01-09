@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 from database import get_db
 import models, schemas
 import hashlib
@@ -20,40 +20,9 @@ def get_users(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
 
 @router.get("/showAllRelations", response_model=schemas.UserWithRentalsPagination)
 def get_users_with_relations(skip: int = 0, limit: int = 10, db:Session=Depends(get_db)):
-    users = db.query(models.User).offset(skip).limit(limit).all()
+    users = db.query(models.User).options(joinedload(models.User.rentals).joinedload(models.Rental.car)).offset(skip).limit(limit).all()
     count = db.query(models.User).count()
-    result = []
-    for user in users:
-        rentals_out = []
-        for r in user.rentals:
-            car = db.query(models.Car).filter(models.Car.id == r.car_id).first()
-            car_obj = None
-            if car:
-                car_obj = {
-                    "id": car.id,
-                    "brand": car.brand,
-                    "model": car.model,
-                    "production_year": car.production_year,
-                    "daily_rental_price": car.daily_rental_price,
-                    "description": car.description
-                }
-            rentals_out.append({
-                "id": r.id,
-                "rental_start": r.rental_start,
-                "rental_end": r.rental_end,
-                "car": car_obj
-            })
-
-        user_obj = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "date_of_birth": user.date_of_birth,
-            "role": user.role,
-            "rentals": rentals_out
-        }
-        result.append(user_obj)
-    return {"items": result, "total": count, "skip": skip, "limit": limit}
+    return {"items": users, "total": count, "skip": skip, "limit": limit}
 
 @router.delete('/deleteUser/{user_id}')
 def delete_user(user_id: int, db: Session = Depends(get_db)):
