@@ -1,25 +1,29 @@
 const API_URL='http://127.0.0.1:8000';
 
 const ApiService={
-    getToken() {
-        return localStorage.getItem('token');
+    getUser() {
+        const u = localStorage.getItem('app_user');
+        return u ? JSON.parse(u) : null;
     },
-    setToken(token) {
-        localStorage.setItem('token', token);
+    setUser(user) {
+        localStorage.setItem('app_user', JSON.stringify(user));
+        localStorage.setItem('user_role', user.role);
+        localStorage.setItem('username', user.username);
+        localStorage.setItem('user_id', user.id);
+        localStorage.removeItem('token');
     },
-    removeToken() {
+    removeUser() {
+        localStorage.removeItem('app_user');
+        localStorage.removeItem('user_role');
+        localStorage.removeItem('username');
+        localStorage.removeItem('user_id');
         localStorage.removeItem('token');
     },
     isLoggedIn() {
-        return !!this.getToken();
+        return !!this.getUser();
     },
     getHeaders() {
-        const headers = {'Content-Type': 'application/json'};
-        const token = this.getToken();
-        if (token) {
-            headers['Authorization'] = `Bearer ${token}`;
-        }
-        return headers;
+        return {'Content-Type': 'application/json'};
     },
 
     async get(endpoint){
@@ -45,16 +49,12 @@ const ApiService={
     },
 
     async login(username, password) {
-        const formData = new URLSearchParams();
-        formData.append('username', username);
-        formData.append('password', password);
-
-        const response = await fetch(`${API_URL}/token`, {
+        const response = await fetch(`${API_URL}/login`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
+                'Content-Type': 'application/json'
             },
-            body: formData
+            body: JSON.stringify({ username, password })
         });
 
         if (!response.ok) {
@@ -100,7 +100,6 @@ const Utils = {
 
         let html = '<div class="pagination" style="margin-top: 10px; display: flex; gap: 10px; align-items: center; justify-content: center;">';
         
-        // Disable "Previous" button if on first page (or hide it)
         if (skip > 0) {
             html += `<button onclick="${fetchFunction}(${skip - limit}, ${limit})">Poprzednia</button>`;
         } else {
@@ -109,7 +108,6 @@ const Utils = {
         
         html += `<span style="font-weight: bold;">Strona ${currentPage} z ${totalPages}</span>`;
 
-        // Disable "Next" button if on last page
         if (skip + limit < total) {
             html += `<button onclick="${fetchFunction}(${skip + limit}, ${limit})">Następna</button>`;
         } else {

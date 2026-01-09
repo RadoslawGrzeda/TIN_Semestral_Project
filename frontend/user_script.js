@@ -6,6 +6,8 @@ const UserModule = {
         const total = response.total || 0;
 
         let html = `<h3>${t('users_list_simple')}</h3><table><tr><th>${t('user_login')}</th><th>${t('user_email')}</th><th>${t('user_dob')}</th><th>${t('actions')}</th></tr>`;
+
+        //co to 
         const role = localStorage.getItem('user_role');
         
         data.forEach(u => {
@@ -14,7 +16,7 @@ const UserModule = {
             html += `<tr><td>${u.username}</td><td>${u.email}</td><td>${u.date_of_birth}</td><td>`;
             if (role === 'admin') {
                 html += `<button onclick="UserModule.deleteUser(${u.id})">${t('delete')}</button><button onclick="UserModule.modifyUserForm(${u.id})">${t('modify')}</button>`;
-                // Auto-promote logic if needed
+        
             } else {
                 html += `<button disabled title="${t('only_admin')}">${t('no_action')}</button>`;
             }
@@ -149,7 +151,7 @@ const UserModule = {
     async deleteUser(userId){
         try{
             await ApiService.delete(`/users/deleteUser/${userId}`);
-            alert(t('user_mod_success')); // Or generic success/deleted message
+            alert(t('user_mod_success')); 
             this.usersList()
         }catch (error){
             alert('Error: '+error.message);
@@ -181,7 +183,7 @@ const UserModule = {
             document.getElementById('display-area').innerHTML = html;
             document.getElementById('modify-user-form').onsubmit = async (e) => {
                 e.preventDefault();
-                // Frontend Validation
+        
                 document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
                 let isValid = true;
                 
@@ -226,8 +228,8 @@ const UserModule = {
         }catch (error){
             alert('Error: '+error.message);
         }  },
-    async modifyUser(userId,userData){
 
+    async modifyUser(userId,userData){
         document.querySelectorAll('span[id^="error-"]').forEach(el => el.innerText = '');
         
         try{

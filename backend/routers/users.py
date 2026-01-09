@@ -95,12 +95,6 @@ def add_user(user:schemas.UserCreate,db:Session = Depends(get_db)):
     db.refresh(db_user)
     return db_user
 
-from auth import get_current_user
-
-@router.get("/me", response_model=schemas.UserResponse)
-def read_users_me(current_user: models.User = Depends(get_current_user)):
-    return current_user
-
 @router.get("/{user_id}", response_model=schemas.UserResponse)
 def get_user(user_id: int, db: Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id == user_id).first()

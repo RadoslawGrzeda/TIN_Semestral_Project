@@ -1,6 +1,6 @@
 const translations = {
     pl: {
-        // Menu & General
+        // Menu 
         "menu_users": "Użytkownicy",
         "menu_cars": "Samochody",
         "menu_rentals": "Wynajmy",
@@ -71,7 +71,7 @@ const translations = {
         "auth_register_btn": "Zarejestruj",
         "auth_back": "Wróć",
 
-        // Common & Validation Specifics
+        // Validation Specifics
         "only_admin": "Tylko administrator",
         "placeholder_no_change": "Pozostaw puste aby nie zmieniać",
         "no_users_found": "Brak użytkowników",
@@ -91,14 +91,14 @@ const translations = {
         "err_date_order": "Data zwrotu > Data wypożyczenia",
         "err_fetch_data": "Błąd pobierania danych pomocniczych",
 
-        // Errors & Validation
+        // Errors
         "err_connection": "Błąd połączenia z API",
         "err_login": "Błędne dane logowania",
         "err_required": "Pole wymagane",
         "err_min_length": "Wymagana długość: przynajmniej {n} znaków",
     },
     en: {
-        // Menu & General
+        // Menu 
         "menu_users": "Users",
         "menu_cars": "Cars",
         "menu_rentals": "Rentals",
@@ -169,7 +169,7 @@ const translations = {
         "auth_register_btn": "Register",
         "auth_back": "Back",
 
-        // Common & Validation Specifics
+        // Validation Specifics
         "only_admin": "Only administrator",
         "placeholder_no_change": "Leave empty to keep current",
         "no_users_found": "No users found",
@@ -189,7 +189,7 @@ const translations = {
         "err_date_order": "Return date > Rental date",
         "err_fetch_data": "Error fetching auxiliary data",
 
-        // Errors & Validation
+        // Errors
         "err_connection": "API Connection Error",
         "err_login": "Invalid login credentials",
         "err_required": "Field required",

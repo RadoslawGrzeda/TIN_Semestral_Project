@@ -6,10 +6,8 @@ from sqlalchemy.orm import declarative_base
 
 Base = declarative_base()
 
-desktop_path = Path.home() / "desktop"
-db_path = desktop_path / "s27383.db"
-
-SQLALCHEMY_DATABASE_URL = f"sqlite:///{db_path}"
+# Use environment variable for DB path or default to a local file
+SQLALCHEMY_DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./app.db")
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}

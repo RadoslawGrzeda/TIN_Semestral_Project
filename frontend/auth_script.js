@@ -95,21 +95,8 @@ const AuthModule = {
         const msg = document.getElementById('login-message');
 
         try {
-            const data = await ApiService.login(usernameInput.value, passwordInput.value);
-            // Zapisz token
-            ApiService.setToken(data.access_token);
-            
-            // Pobierz dane uzytkownika (opcjonalnie, zeby znac role i id)
-            // Jesli to sie nie uda, to trudno - uzytkownik i tak jest 'zalogowany' tokenem
-            try {
-                const me = await ApiService.get('/users/me');
-                localStorage.setItem('user_role', me.role);
-                localStorage.setItem('user_id', me.id);
-                localStorage.setItem('username', me.username);
-            } catch (e) {
-                console.warn('Nie udalo sie pobrac danych usera:', e);
-            }
-
+            const user = await ApiService.login(usernameInput.value, passwordInput.value);
+            ApiService.setUser(user);
             this.updateUI();
         } catch (error) {
             msg.innerText = 'Błąd: ' + error.message;
@@ -138,8 +125,7 @@ const AuthModule = {
     },
 
     logout: function() {
-        ApiService.removeToken();
-        localStorage.clear(); // Wyczysc wszystko (role, id, username)
+        ApiService.removeUser();
         
         // Usun przycisk wylogowania z DOM zeby nie dublowac
         const btn = document.getElementById('btn-logout');

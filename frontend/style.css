@@ -16,3 +16,19 @@ table { width: 100%; border-collapse: collapse; }
 th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
 th { background: #f8f9fa; }
 input { padding: 8px; margin-bottom: 10px; width: 100%; box-sizing: border-box; }
+
+/* Center login/register area on the whole page */
+#auth-area {
+	position: fixed;
+	inset: 0; /* top:0; right:0; bottom:0; left:0; */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.05);
+	z-index: 1000;
+}
+
+#auth-area > div {
+	width: 100%;
+	max-width: 380px;
+}

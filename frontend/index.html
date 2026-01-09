@@ -34,17 +34,15 @@
     </div>
     
     <script>
-        // Apply translations on load
         document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('menu-users').innerText = t('menu_users');
             document.getElementById('menu-cars').innerText = t('menu_cars');
             document.getElementById('menu-rentals').innerText = t('menu_rentals');
             
-            // Initial buttons text
             document.getElementById('btn-list').innerText = t('btn_list');
             document.getElementById('btn-details').innerText = t('btn_details');
             document.getElementById('btn-add').innerText = t('btn_add');
-            document.getElementById('page-title').innerText = t('page_title_manage'); // Should be generic title initially? Or "Check module"
+            document.getElementById('page-title').innerText = t('page_title_manage'); 
         });
 
         function router(modul) {
@@ -52,11 +50,9 @@
             document.getElementById('page-title').innerText = t('page_title_manage') + t('menu_' + modul);
             document.getElementById('display-area').innerHTML = t('select_action');
 
-            // Role check
             const role = localStorage.getItem('user_role');
             const btnAdd = document.getElementById('btn-add');
 
-            // Show/Hide Add button based on role
             if (role === 'admin') {
                 btnAdd.style.display = 'inline-block';
             } else {
@@ -67,10 +63,12 @@
                 document.getElementById('btn-list').onclick = () => UserModule.usersList();
                 document.getElementById('btn-details').onclick = () => UserModule.detailUserList();
                 if(role === 'admin') document.getElementById('btn-add').onclick = () => UserModule.addUserForm();
+
             } else if(modul === 'cars') {
                 document.getElementById('btn-list').onclick = () => CarModule.carList();
                 document.getElementById('btn-details').onclick = () => CarModule.detailCarList();
                 if(role === 'admin') document.getElementById('btn-add').onclick = () => CarModule.addCarForm();
+                
             } else if(modul === 'rentals') {
                 document.getElementById('btn-list').onclick = () => RentalModule.rentalsList();
                 document.getElementById('btn-details').onclick = () => RentalModule.detailRentalList();
